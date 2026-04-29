@@ -1,0 +1,33 @@
+
+01) seed_FARBE.sql              
+02) seed_GROESSE.sql            
+03) seed_MATERIAL.sql          
+04) seed_PRODUKTKATEGORIE.sql   
+05) seed_RABATT.sql            
+06) seed_PRODUKT.sql            
+07) seed_PRODUKTVARIANTE.sql    
+08) seed_KUNDE.sql              
+
+09) seed_LAGER.sql             
+10) seed_FILIALE_5.sql          
+11) seed_OEFFNUNGSZEITEN.sql  
+
+12) seed_BESTELLUNG.sql         
+13) seed_ANGESTELLTER.sql       
+
+14) seed_LIEFERANT.sql          
+15) seed_LIEFERANT_PRODUKT.sql  
+
+16) seed_LAGER_PRODUKT.sql      
+17) seed_PREIS_HISTORIE.sql     
+
+18) seed_BESTAND.sql            
+19) seed_BESTELLPOSITION.sql    
+20) seed_LAGERBEWEGUNG.sql      
+
+21) seed_ZAHLUNGSART.sql        
+22) seed_VERKAUF.sql            
+23) seed_VERKAUFPOSITION.sql    
+24) seed_RUECKGABE.sql          
+
+25) seed_BEWERTUNG.sql          
