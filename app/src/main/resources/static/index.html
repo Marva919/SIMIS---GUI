@@ -1,0 +1,1445 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Möbelhaus — Mitarbeiterportal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #f5f1eb;
+            --surface: #faf8f5;
+            --surface2: #ffffff;
+            --border: #e0d9cf;
+            --text: #1a1612;
+            --text-muted: #7a6e62;
+            --accent: #8b5e3c;
+            --accent-light: #f0e6da;
+            --accent-hover: #6e4a2e;
+            --success: #2d6a4f;
+            --success-light: #d8f3dc;
+            --danger: #9b2226;
+            --danger-light: #fde2e4;
+            --warning: #7f4f24;
+            --warning-light: #fff3e4;
+            --shadow: 0 2px 8px rgba(26,22,18,.08);
+            --shadow-lg: 0 8px 32px rgba(26,22,18,.14);
+            --radius: 10px;
+            --radius-lg: 16px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        h1, h2, h3 { font-family: 'Playfair Display', serif; }
+
+        /* ── LOGIN ────────────────────────────────────────────── */
+        #login-page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #2c1a0e 0%, #5c3317 60%, #8b5e3c 100%);
+            padding: 24px;
+        }
+
+        .login-card {
+            background: var(--surface2);
+            border-radius: var(--radius-lg);
+            padding: 48px 40px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .login-logo {
+            text-align: center;
+            margin-bottom: 36px;
+        }
+
+        .login-logo h1 {
+            font-size: 28px;
+            color: var(--accent);
+            letter-spacing: -0.5px;
+        }
+
+        .login-logo p {
+            color: var(--text-muted);
+            font-size: 13px;
+            margin-top: 4px;
+            font-weight: 300;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 11px 14px;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 15px;
+            color: var(--text);
+            background: var(--surface);
+            transition: border-color .2s, box-shadow .2s;
+            outline: none;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(139,94,60,.1);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 11px 22px;
+            border-radius: var(--radius);
+            border: none;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all .18s;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #fff;
+            width: 100%;
+            justify-content: center;
+            font-size: 15px;
+            padding: 13px;
+        }
+
+        .btn-primary:hover { background: var(--accent-hover); transform: translateY(-1px); box-shadow: var(--shadow); }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--accent);
+            border: 1.5px solid var(--accent);
+        }
+
+        .btn-outline:hover { background: var(--accent-light); }
+
+        .btn-sm { padding: 7px 14px; font-size: 13px; }
+
+        .btn-danger { background: var(--danger); color: #fff; }
+        .btn-danger:hover { background: #7b1a1d; }
+
+        .btn-success { background: var(--success); color: #fff; }
+        .btn-success:hover { background: #1b4332; }
+
+        .btn-ghost { background: transparent; color: var(--text-muted); }
+        .btn-ghost:hover { background: var(--border); color: var(--text); }
+
+        /* ── MAIN APP ─────────────────────────────────────────── */
+        #app { display: none; }
+
+        .topbar {
+            background: var(--surface2);
+            border-bottom: 1px solid var(--border);
+            padding: 0 24px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow);
+        }
+
+        .topbar-brand {
+            font-family: 'Playfair Display', serif;
+            font-size: 20px;
+            color: var(--accent);
+            letter-spacing: -0.3px;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .user-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--accent-light);
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 4px;
+            padding: 16px 24px 0;
+            border-bottom: 1px solid var(--border);
+            background: var(--surface2);
+        }
+
+        .nav-tab {
+            padding: 9px 18px;
+            font-size: 14px;
+            font-weight: 400;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all .18s;
+            border-radius: var(--radius) var(--radius) 0 0;
+            margin-bottom: -1px;
+        }
+
+        .nav-tab:hover { color: var(--accent); background: var(--accent-light); }
+        .nav-tab.active { color: var(--accent); font-weight: 500; border-bottom-color: var(--accent); }
+
+        .content { padding: 28px 24px; max-width: 1280px; margin: 0 auto; }
+
+        /* ── PRODUKT-LISTE ────────────────────────────────────── */
+        .filter-bar {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 24px;
+            align-items: flex-end;
+        }
+
+        .filter-bar .form-group { margin: 0; min-width: 160px; }
+
+        .filter-bar .form-group input, .filter-bar .form-group select {
+            padding: 9px 12px;
+            font-size: 14px;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .product-card {
+            background: var(--surface2);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            overflow: hidden;
+            transition: transform .2s, box-shadow .2s;
+            cursor: pointer;
+        }
+
+        .product-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--accent);
+        }
+
+        .product-img {
+            height: 160px;
+            background: var(--accent-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            color: var(--accent);
+        }
+
+        .product-body { padding: 18px; }
+
+        .product-category {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+
+        .product-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 18px;
+            margin-bottom: 6px;
+            color: var(--text);
+        }
+
+        .product-desc {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 14px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .product-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .product-price {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        .stock-badge {
+            font-size: 11px;
+            font-weight: 500;
+            padding: 3px 8px;
+            border-radius: 20px;
+        }
+
+        .stock-ok  { background: var(--success-light); color: var(--success); }
+        .stock-low { background: var(--warning-light); color: var(--warning); }
+        .stock-out { background: var(--danger-light);  color: var(--danger); }
+
+        /* ── PRODUKT MODAL ────────────────────────────────────── */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(26,22,18,.5);
+            z-index: 200;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .modal-overlay.open { display: flex; }
+
+        .modal {
+            background: var(--surface2);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 24px;
+        }
+
+        .modal-title { font-size: 22px; }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 22px;
+            cursor: pointer;
+            color: var(--text-muted);
+            padding: 4px;
+            border-radius: 6px;
+        }
+
+        .close-btn:hover { background: var(--border); color: var(--text); }
+
+        .variante-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+
+        .variante-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: all .15s;
+        }
+
+        .variante-item:hover { border-color: var(--accent); background: var(--accent-light); }
+        .variante-item.selected { border-color: var(--accent); background: var(--accent-light); }
+
+        .variante-info { font-size: 14px; }
+        .variante-sub  { font-size: 12px; color: var(--text-muted); }
+
+        /* ── WARENKORB ───────────────────────────────────────── */
+        .cart-panel {
+            background: var(--surface2);
+            border-left: 1px solid var(--border);
+            width: 360px;
+            position: fixed;
+            right: 0;
+            top: 60px;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            overflow-y: auto;
+            transform: translateX(100%);
+            transition: transform .25s ease;
+        }
+
+        .cart-panel.open { transform: translateX(0); }
+
+        .cart-toggle {
+            position: fixed;
+            right: 20px;
+            bottom: 24px;
+            z-index: 150;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: var(--accent);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            box-shadow: var(--shadow-lg);
+            border: none;
+            cursor: pointer;
+            transition: all .18s;
+        }
+
+        .cart-toggle:hover { background: var(--accent-hover); transform: scale(1.08); }
+
+        .cart-count {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background: var(--danger);
+            color: #fff;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            font-size: 11px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .cart-item {
+            display: flex;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+            align-items: flex-start;
+        }
+
+        .cart-item-info { flex: 1; }
+        .cart-item-name { font-size: 14px; font-weight: 500; }
+        .cart-item-sub  { font-size: 12px; color: var(--text-muted); }
+        .cart-item-price { font-size: 14px; font-weight: 600; color: var(--accent); }
+
+        .cart-item-qty {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 6px;
+        }
+
+        .qty-btn {
+            width: 24px;
+            height: 24px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: var(--surface);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all .15s;
+        }
+
+        .qty-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+        .cart-summary {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1.5px solid var(--border);
+        }
+
+        .cart-total {
+            display: flex;
+            justify-content: space-between;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        /* ── BESTELLUNG AUFGEBEN ──────────────────────────────── */
+        .order-form { max-width: 640px; }
+
+        /* ── TOAST ───────────────────────────────────────────── */
+        #toast-container {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .toast {
+            padding: 12px 18px;
+            border-radius: var(--radius);
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: var(--shadow-lg);
+            animation: slideIn .25s ease;
+            max-width: 320px;
+        }
+
+        @keyframes slideIn { from { transform: translateX(120%); } to { transform: translateX(0); } }
+
+        .toast-success { background: var(--success); color: #fff; }
+        .toast-error   { background: var(--danger);  color: #fff; }
+        .toast-info    { background: var(--accent);  color: #fff; }
+
+        /* ── BESTELLUNGSLISTE ─────────────────────────────────── */
+        .order-table { width: 100%; border-collapse: collapse; }
+
+        .order-table th {
+            text-align: left;
+            padding: 10px 14px;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 500;
+            color: var(--text-muted);
+            border-bottom: 1.5px solid var(--border);
+        }
+
+        .order-table td {
+            padding: 13px 14px;
+            font-size: 14px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .order-table tr:hover td { background: var(--accent-light); }
+
+        .status-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .status-NEU          { background: #dbeafe; color: #1e40af; }
+        .status-BESTAETIGT   { background: var(--success-light); color: var(--success); }
+        .status-IN_BEARBEITUNG { background: var(--warning-light); color: var(--warning); }
+        .status-STORNIERT    { background: var(--danger-light); color: var(--danger); }
+        .status-GELIEFERT    { background: #e0e7ff; color: #3730a3; }
+
+        /* ── UTILS ───────────────────────────────────────────── */
+        .section-header {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .section-title { font-size: 24px; }
+        .section-sub   { font-size: 14px; color: var(--text-muted); margin-top: 2px; }
+
+        .empty-state {
+            text-align: center;
+            padding: 64px 0;
+            color: var(--text-muted);
+        }
+
+        .empty-state .icon { font-size: 48px; margin-bottom: 12px; }
+        .empty-state p     { font-size: 15px; }
+
+        .info-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+
+        .info-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            background: var(--accent-light);
+            color: var(--accent);
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .divider { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+
+        .loading { display: flex; align-items: center; gap: 10px; color: var(--text-muted); padding: 32px 0; justify-content: center; }
+
+        @media (max-width: 700px) {
+            .product-grid { grid-template-columns: 1fr; }
+            .cart-panel { width: 100%; }
+            .filter-bar { flex-direction: column; }
+            .content { padding: 16px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ════════════════════════════════ LOGIN ════════════════════════════════ -->
+<div id="login-page">
+    <div class="login-card">
+        <div class="login-logo">
+            <h1>🪑 Möbelhaus</h1>
+            <p>Mitarbeiterportal · Intern</p>
+        </div>
+        <div class="form-group">
+            <label>E-Mail</label>
+            <input type="email" id="login-email" placeholder="max.mustermann@moebelhaus.de" value="max.mustermann@moebelhaus.de">
+        </div>
+        <div class="form-group">
+            <label>Passwort</label>
+            <input type="password" id="login-passwort" placeholder="••••••••" value="admin123">
+        </div>
+        <button class="btn btn-primary" onclick="login()">Anmelden</button>
+        <p style="text-align:center;font-size:12px;color:var(--text-muted);margin-top:16px">Demo: max.mustermann@moebelhaus.de / admin123</p>
+        <div id="login-error" style="display:none;margin-top:12px;padding:10px;background:var(--danger-light);color:var(--danger);border-radius:var(--radius);font-size:13px;text-align:center"></div>
+    </div>
+</div>
+
+<!-- ════════════════════════════════ APP ════════════════════════════════ -->
+<div id="app">
+    <div class="topbar">
+        <span class="topbar-brand">🪑 Möbelhaus</span>
+        <div class="topbar-right">
+            <div class="user-badge">
+                <div class="user-avatar" id="user-avatar">M</div>
+                <span id="user-name">Mitarbeiter</span>
+                <span class="info-chip" id="user-rolle" style="font-size:10px">MITARBEITER</span>
+            </div>
+            <button class="btn btn-ghost btn-sm" onclick="logout()">Abmelden</button>
+        </div>
+    </div>
+
+    <div class="nav-tabs">
+        <div class="nav-tab active" onclick="showTab('produkte')">🛋 Produkte</div>
+        <div class="nav-tab" onclick="showTab('bestellung')">📋 Neue Bestellung</div>
+        <div class="nav-tab" onclick="showTab('bestellungen')">📦 Bestellungen</div>
+    </div>
+
+    <!-- ─── TAB: PRODUKTE ─── -->
+    <div id="tab-produkte" class="content">
+        <div class="section-header">
+            <div>
+                <h2 class="section-title">Produktkatalog</h2>
+                <p class="section-sub" id="produkt-count">Produkte werden geladen…</p>
+            </div>
+        </div>
+        <div class="filter-bar">
+            <div class="form-group" style="flex:1;min-width:200px">
+                <label>Suche</label>
+                <input type="text" id="filter-suche" placeholder="Name oder Beschreibung…" oninput="filterProdukte()">
+            </div>
+            <div class="form-group">
+                <label>Kategorie</label>
+                <select id="filter-kategorie" onchange="filterProdukte()">
+                    <option value="">Alle</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Min. Preis (€)</label>
+                <input type="number" id="filter-min" placeholder="0" oninput="filterProdukte()" style="width:110px">
+            </div>
+            <div class="form-group">
+                <label>Max. Preis (€)</label>
+                <input type="number" id="filter-max" placeholder="9999" oninput="filterProdukte()" style="width:110px">
+            </div>
+        </div>
+        <div id="product-grid" class="product-grid">
+            <div class="loading">⏳ Lade Produkte…</div>
+        </div>
+    </div>
+
+    <!-- ─── TAB: NEUE BESTELLUNG ─── -->
+    <div id="tab-bestellung" class="content" style="display:none">
+        <div class="section-header">
+            <div>
+                <h2 class="section-title">Bestellung aufgeben</h2>
+                <p class="section-sub">Kunde auswählen und Produkte aus dem Warenkorb bestellen</p>
+            </div>
+        </div>
+        <div class="order-form">
+
+            <!-- Kundenauswahl -->
+            <h3 style="font-size:16px;margin-bottom:14px;font-family:'DM Sans',sans-serif;font-weight:500">1. Kunde</h3>
+            <div style="display:flex;gap:10px;margin-bottom:8px">
+                <div class="form-group" style="flex:1;margin:0">
+                    <input type="text" id="kunde-suche" placeholder="Name suchen…" oninput="sucheKunde(this.value)">
+                </div>
+                <button class="btn btn-outline btn-sm" onclick="toggleNeuerKunde()">+ Neuer Kunde</button>
+            </div>
+            <div id="kunde-ergebnisse" style="margin-bottom:12px"></div>
+
+            <div id="neuer-kunde-form" style="display:none;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:16px">
+                <p style="font-size:13px;font-weight:500;margin-bottom:12px;color:var(--text-muted)">Neuen Kunden anlegen</p>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                    <div class="form-group" style="margin:0"><label>Vorname</label><input type="text" id="nk-vorname"></div>
+                    <div class="form-group" style="margin:0"><label>Nachname</label><input type="text" id="nk-nachname"></div>
+                    <div class="form-group" style="margin:0"><label>E-Mail</label><input type="email" id="nk-email"></div>
+                    <div class="form-group" style="margin:0"><label>Telefon</label><input type="text" id="nk-telefon"></div>
+                    <div class="form-group" style="margin:0;grid-column:span 2"><label>Straße</label><input type="text" id="nk-strasse"></div>
+                    <div class="form-group" style="margin:0"><label>PLZ</label><input type="text" id="nk-plz"></div>
+                    <div class="form-group" style="margin:0"><label>Ort</label><input type="text" id="nk-ort"></div>
+                </div>
+                <button class="btn btn-primary" style="margin-top:14px;width:auto;padding:9px 20px" onclick="kundeAnlegen()">Kunden anlegen</button>
+            </div>
+
+            <div id="ausgewaehlter-kunde" style="display:none;padding:14px;background:var(--success-light);border-radius:var(--radius);margin-bottom:20px;font-size:14px">
+                <strong id="kunde-anzeige"></strong>
+            </div>
+
+            <hr class="divider">
+
+            <!-- Warenkorb Summary -->
+            <h3 style="font-size:16px;margin-bottom:14px;font-family:'DM Sans',sans-serif;font-weight:500">2. Bestellpositionen</h3>
+            <div id="order-cart-summary">
+                <div class="empty-state" style="padding:24px 0">
+                    <div class="icon">🛒</div>
+                    <p>Keine Produkte im Warenkorb.<br>Gehe zum Produktkatalog und wähle Artikel aus.</p>
+                </div>
+            </div>
+
+            <hr class="divider">
+
+            <!-- Lieferdetails -->
+            <h3 style="font-size:16px;margin-bottom:14px;font-family:'DM Sans',sans-serif;font-weight:500">3. Lieferdetails</h3>
+            <div class="form-group">
+                <label>Lieferadresse (optional)</label>
+                <input type="text" id="lieferadresse" placeholder="Abweichende Lieferadresse…">
+            </div>
+            <div class="form-group">
+                <label>Notizen</label>
+                <textarea id="notizen" rows="3" placeholder="Bemerkungen zur Bestellung…" style="resize:vertical"></textarea>
+            </div>
+
+            <button class="btn btn-success" style="width:100%;font-size:15px;padding:14px" onclick="bestellungAufgeben()">
+                ✅ Bestellung verbindlich aufgeben
+            </button>
+        </div>
+    </div>
+
+    <!-- ─── TAB: BESTELLUNGEN ─── -->
+    <div id="tab-bestellungen" class="content" style="display:none">
+        <div class="section-header">
+            <div>
+                <h2 class="section-title">Bestellungen</h2>
+                <p class="section-sub">Alle Bestellungen der Filiale</p>
+            </div>
+            <button class="btn btn-outline btn-sm" onclick="ladeBestellungen()">↺ Aktualisieren</button>
+        </div>
+        <div id="bestellungen-inhalt">
+            <div class="loading">⏳ Lade Bestellungen…</div>
+        </div>
+    </div>
+</div>
+
+<!-- ─── PRODUKT-MODAL ─── -->
+<div class="modal-overlay" id="produkt-modal" onclick="if(event.target===this)closeModal()">
+    <div class="modal">
+        <div class="modal-header">
+            <h2 class="modal-title" id="modal-name"></h2>
+            <button class="close-btn" onclick="closeModal()">✕</button>
+        </div>
+        <div id="modal-body"></div>
+    </div>
+</div>
+
+<!-- ─── WARENKORB-PANEL ─── -->
+<div id="cart-panel" class="cart-panel">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <h3 style="font-size:18px">🛒 Warenkorb</h3>
+        <button class="btn btn-ghost btn-sm" onclick="toggleCart()">✕</button>
+    </div>
+    <div id="cart-items" style="flex:1;overflow-y:auto"></div>
+    <div class="cart-summary">
+        <div class="cart-total">
+            <span>Gesamt</span>
+            <span id="cart-total">0,00 €</span>
+        </div>
+        <button class="btn btn-success" style="width:100%" onclick="showTab('bestellung');toggleCart()">
+            Zur Bestellung →
+        </button>
+    </div>
+</div>
+
+<button class="cart-toggle" onclick="toggleCart()" style="position:relative">
+    🛒
+    <span class="cart-count" id="cart-count" style="display:none">0</span>
+</button>
+
+<div id="toast-container"></div>
+
+<script>
+    // ════════════════════════════════════════════════════════
+    //  Config
+    // ════════════════════════════════════════════════════════
+    const API = 'http://localhost:8080/api';
+    let TOKEN = localStorage.getItem('jwt_token');
+    let CURRENT_USER = JSON.parse(localStorage.getItem('current_user') || 'null');
+
+    // ── Demo-Modus (ohne echtes Backend) ────────────────────
+    const DEMO_MODE = false;   // auf false setzen, wenn Backend läuft
+
+    // ════════════════════════════════════════════════════════
+    //  Demo-Daten
+    // ════════════════════════════════════════════════════════
+    const DEMO_PRODUKTE = [
+        { produkt_id:1, produkt_name:'Bett NORDIC',  kategorie:'Schlafzimmer', beschreibung:'Skandinavisches Bett aus Eiche massiv, zeitloses Design', material_name:'Eiche massiv', variante_id:1, sku:'NORDIC-80-NAT',  farbe:'Natur', groesse:'80x200 cm',  gesamt_preis:899,  lagerbestand:15 },
+        { produkt_id:1, produkt_name:'Bett NORDIC',  kategorie:'Schlafzimmer', beschreibung:'Skandinavisches Bett aus Eiche massiv, zeitloses Design', material_name:'Eiche massiv', variante_id:2, sku:'NORDIC-90-NAT',  farbe:'Natur', groesse:'90x200 cm',  gesamt_preis:949,  lagerbestand:10 },
+        { produkt_id:1, produkt_name:'Bett NORDIC',  kategorie:'Schlafzimmer', beschreibung:'Skandinavisches Bett aus Eiche massiv, zeitloses Design', material_name:'Eiche massiv', variante_id:3, sku:'NORDIC-160-NAT', farbe:'Natur', groesse:'160x200 cm', gesamt_preis:1049, lagerbestand:8  },
+        { produkt_id:2, produkt_name:'Bett METRO',   kategorie:'Schlafzimmer', beschreibung:'Modernes Polsterbett mit Stoffbezug, inkl. Lattenrost',   material_name:'Baumwollstoff', variante_id:5, sku:'METRO-140-GR',  farbe:'Grau',  groesse:'140x200 cm', gesamt_preis:649,  lagerbestand:12 },
+        { produkt_id:2, produkt_name:'Bett METRO',   kategorie:'Schlafzimmer', beschreibung:'Modernes Polsterbett mit Stoffbezug, inkl. Lattenrost',   material_name:'Baumwollstoff', variante_id:7, sku:'METRO-160-AN',  farbe:'Anthrazit', groesse:'160x200 cm', gesamt_preis:729, lagerbestand:6  },
+        { produkt_id:3, produkt_name:'Esstisch OSLO',kategorie:'Esszimmer',    beschreibung:'Massivholztisch aus Eiche, ausziehbar 160–220 cm',       material_name:'Eiche massiv', variante_id:9, sku:'OSLO-120-NAT',  farbe:'Natur', groesse:'60x120 cm',  gesamt_preis:1299, lagerbestand:20 },
+        { produkt_id:3, produkt_name:'Esstisch OSLO',kategorie:'Esszimmer',    beschreibung:'Massivholztisch aus Eiche, ausziehbar 160–220 cm',       material_name:'Eiche massiv', variante_id:11,sku:'OSLO-160-WS',   farbe:'Weiß',  groesse:'80x160 cm',  gesamt_preis:1499, lagerbestand:14 },
+        { produkt_id:4, produkt_name:'Stuhl SIGRID', kategorie:'Esszimmer',    beschreibung:'Stapelbarer Stuhl, Stahlgestell mit Stoffsitz',           material_name:'Baumwollstoff', variante_id:12,sku:'SIGRID-GR',    farbe:'Grau',  groesse:null,         gesamt_preis:149,  lagerbestand:30 },
+        { produkt_id:4, produkt_name:'Stuhl SIGRID', kategorie:'Esszimmer',    beschreibung:'Stapelbarer Stuhl, Stahlgestell mit Stoffsitz',           material_name:'Baumwollstoff', variante_id:13,sku:'SIGRID-SW',    farbe:'Schwarz', groesse:null,       gesamt_preis:149,  lagerbestand:25 },
+        { produkt_id:4, produkt_name:'Stuhl SIGRID', kategorie:'Esszimmer',    beschreibung:'Stapelbarer Stuhl, Stahlgestell mit Stoffsitz',           material_name:'Baumwollstoff', variante_id:14,sku:'SIGRID-BL',    farbe:'Blau',  groesse:null,         gesamt_preis:159,  lagerbestand:20 },
+        { produkt_id:5, produkt_name:'Sofa COMFORT', kategorie:'Wohnzimmer',   beschreibung:'L-Sofa mit Schlaffunktion, 5 Sitzer',                    material_name:'Baumwollstoff', variante_id:15,sku:'COMFORT-HG',   farbe:'Hellgrau', groesse:null,      gesamt_preis:1799, lagerbestand:6  },
+        { produkt_id:5, produkt_name:'Sofa COMFORT', kategorie:'Wohnzimmer',   beschreibung:'L-Sofa mit Schlaffunktion, 5 Sitzer',                    material_name:'Baumwollstoff', variante_id:16,sku:'COMFORT-DB',   farbe:'Dunkelblau', groesse:null,    gesamt_preis:1899, lagerbestand:4  },
+        { produkt_id:6, produkt_name:'Regal CUBE',   kategorie:'Wohnzimmer',   beschreibung:'Würfelregal MDF weiß hochglanz, modular erweiterbar',    material_name:'MDF lackiert', variante_id:17, sku:'CUBE-S-WS',   farbe:'Weiß',  groesse:'S',          gesamt_preis:249,  lagerbestand:22 },
+        { produkt_id:6, produkt_name:'Regal CUBE',   kategorie:'Wohnzimmer',   beschreibung:'Würfelregal MDF weiß hochglanz, modular erweiterbar',    material_name:'MDF lackiert', variante_id:18, sku:'CUBE-M-WS',   farbe:'Weiß',  groesse:'M',          gesamt_preis:299,  lagerbestand:18 },
+        { produkt_id:6, produkt_name:'Regal CUBE',   kategorie:'Wohnzimmer',   beschreibung:'Würfelregal MDF weiß hochglanz, modular erweiterbar',    material_name:'MDF lackiert', variante_id:19, sku:'CUBE-L-WS',   farbe:'Weiß',  groesse:'L',          gesamt_preis:349,  lagerbestand:15 },
+    ];
+
+    const DEMO_BESTELLUNGEN = [
+        { bestellung_id:1001, kunde:'Müller, Hans', erstellt_am:'2024-11-14 10:23', status:'BESTAETIGT',    gesamt_betrag:1199.00, positionen:2 },
+        { bestellung_id:1002, kunde:'Wagner, Lisa', erstellt_am:'2024-11-13 15:07', status:'IN_BEARBEITUNG', gesamt_betrag:3598.00, positionen:3 },
+        { bestellung_id:1003, kunde:'Klein, Peter', erstellt_am:'2024-11-12 09:45', status:'GELIEFERT',     gesamt_betrag:447.00,  positionen:3 },
+        { bestellung_id:1004, kunde:'Braun, Anna',  erstellt_am:'2024-11-11 14:30', status:'STORNIERT',     gesamt_betrag:899.00,  positionen:1 },
+    ];
+
+    // ════════════════════════════════════════════════════════
+    //  State
+    // ════════════════════════════════════════════════════════
+    let alleProdukte = [];
+    let warenkorb = [];
+    let ausgewaehlterKunde = null;
+
+    // ════════════════════════════════════════════════════════
+    //  API
+    // ════════════════════════════════════════════════════════
+    async function apiFetch(path, opts = {}) {
+        if (DEMO_MODE) return null;
+        const res = await fetch(API + path, {
+            ...opts,
+            headers: {
+                'Content-Type': 'application/json',
+                ...(TOKEN ? { Authorization: 'Bearer ' + TOKEN } : {}),
+                ...(opts.headers || {}),
+            },
+        });
+        if (!res.ok) {
+            const err = await res.json().catch(() => ({ error: res.statusText }));
+            throw new Error(err.error || 'Fehler ' + res.status);
+        }
+        return res.json();
+    }
+
+    // ════════════════════════════════════════════════════════
+    //  AUTH
+    // ════════════════════════════════════════════════════════
+    async function login() {
+        const email    = document.getElementById('login-email').value;
+        const passwort = document.getElementById('login-passwort').value;
+        const errEl    = document.getElementById('login-error');
+        errEl.style.display = 'none';
+
+        if (DEMO_MODE) {
+            if (email === 'max.mustermann@moebelhaus.de' && passwort === 'admin123') {
+                CURRENT_USER = { name: 'Max Mustermann', rolle: 'MANAGER', angestellterId: 1, filialeId: 1, lagerId: 1 };
+                localStorage.setItem('current_user', JSON.stringify(CURRENT_USER));
+                TOKEN = 'demo-token';
+                showApp();
+            } else {
+                errEl.textContent = 'Ungültige Anmeldedaten';
+                errEl.style.display = 'block';
+            }
+            return;
+        }
+
+        try {
+            const data = await apiFetch('/auth/login', {
+                method: 'POST',
+                body: JSON.stringify({ email, passwort }),
+            });
+            TOKEN = data.token;
+            localStorage.setItem('jwt_token', TOKEN);
+            showApp();
+        } catch (e) {
+            errEl.textContent = e.message;
+            errEl.style.display = 'block';
+        }
+    }
+
+    function logout() {
+        TOKEN = null;
+        CURRENT_USER = null;
+        localStorage.clear();
+        document.getElementById('app').style.display = 'none';
+        document.getElementById('login-page').style.display = 'flex';
+    }
+
+    function showApp() {
+        document.getElementById('login-page').style.display = 'none';
+        document.getElementById('app').style.display = 'block';
+        const u = CURRENT_USER;
+        if (u) {
+            document.getElementById('user-name').textContent = u.name || 'Mitarbeiter';
+            document.getElementById('user-rolle').textContent = u.rolle || 'MITARBEITER';
+            document.getElementById('user-avatar').textContent = (u.name || 'M')[0].toUpperCase();
+        }
+        ladeProdukte();
+    }
+
+    // Auto-login wenn Token vorhanden
+    if (TOKEN && CURRENT_USER) showApp();
+
+    // ════════════════════════════════════════════════════════
+    //  NAVIGATION
+    // ════════════════════════════════════════════════════════
+    function showTab(tab) {
+        ['produkte','bestellung','bestellungen'].forEach(t => {
+            document.getElementById('tab-' + t).style.display = t === tab ? 'block' : 'none';
+        });
+        document.querySelectorAll('.nav-tab').forEach((el, i) => {
+            el.classList.toggle('active', ['produkte','bestellung','bestellungen'][i] === tab);
+        });
+        if (tab === 'bestellungen') ladeBestellungen();
+        if (tab === 'bestellung') aktualisiereBestellformular();
+    }
+
+    // ════════════════════════════════════════════════════════
+    //  PRODUKTE
+    // ════════════════════════════════════════════════════════
+    async function ladeProdukte() {
+        if (DEMO_MODE) {
+            alleProdukte = DEMO_PRODUKTE;
+            renderProdukte(alleProdukte);
+            ladeKategorien();
+            return;
+        }
+        try {
+            alleProdukte = await apiFetch('/produkte?lagerId=1');
+            renderProdukte(alleProdukte);
+            ladeKategorien();
+        } catch (e) {
+            toast('Fehler beim Laden der Produkte: ' + e.message, 'error');
+        }
+    }
+
+    async function ladeKategorien() {
+        const kategorien = DEMO_MODE
+            ? [...new Set(alleProdukte.map(p => p.kategorie))]
+            : await apiFetch('/produkte/kategorien');
+
+        const sel = document.getElementById('filter-kategorie');
+        kategorien.forEach(k => {
+            const opt = document.createElement('option');
+            opt.value = k; opt.textContent = k;
+            sel.appendChild(opt);
+        });
+    }
+
+    function filterProdukte() {
+        const suche    = document.getElementById('filter-suche').value.toLowerCase();
+        const kat      = document.getElementById('filter-kategorie').value;
+        const min      = parseFloat(document.getElementById('filter-min').value) || 0;
+        const max      = parseFloat(document.getElementById('filter-max').value) || 999999;
+
+        const gefiltert = alleProdukte.filter(p => {
+            const matchSuche = !suche || p.produkt_name.toLowerCase().includes(suche) || (p.beschreibung||'').toLowerCase().includes(suche);
+            const matchKat   = !kat   || p.kategorie === kat;
+            const matchPreis = p.gesamt_preis >= min && p.gesamt_preis <= max;
+            return matchSuche && matchKat && matchPreis;
+        });
+
+        renderProdukte(gefiltert);
+    }
+
+    function renderProdukte(produkte) {
+        const grid = document.getElementById('product-grid');
+        document.getElementById('produkt-count').textContent = produkte.length + ' Varianten gefunden';
+
+        if (!produkte.length) {
+            grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="icon">🔍</div><p>Keine Produkte gefunden.</p></div>`;
+            return;
+        }
+
+        // Produkte nach Produkt-ID gruppieren für kompaktere Anzeige
+        const grouped = {};
+        produkte.forEach(p => {
+            if (!grouped[p.produkt_id]) grouped[p.produkt_id] = { ...p, varianten: [] };
+            grouped[p.produkt_id].varianten.push(p);
+        });
+
+        const kategorieIcons = { 'Schlafzimmer':'🛏', 'Esszimmer':'🍽', 'Wohnzimmer':'🛋', 'Büro':'💼' };
+
+        grid.innerHTML = Object.values(grouped).map(p => {
+            const minPreis = Math.min(...p.varianten.map(v => v.gesamt_preis));
+            const maxPreis = Math.max(...p.varianten.map(v => v.gesamt_preis));
+            const gesamtBestand = p.varianten.reduce((s, v) => s + (v.lagerbestand||0), 0);
+            const stockClass = gesamtBestand > 10 ? 'stock-ok' : gesamtBestand > 0 ? 'stock-low' : 'stock-out';
+            const stockText  = gesamtBestand > 0 ? gesamtBestand + ' auf Lager' : 'Ausverkauft';
+            const preisStr   = minPreis === maxPreis ? formatEur(minPreis) : 'ab ' + formatEur(minPreis);
+            const icon       = kategorieIcons[p.kategorie] || '🪑';
+
+            return `
+      <div class="product-card" onclick="openProduktModal(${p.produkt_id})">
+        <div class="product-img">${icon}</div>
+        <div class="product-body">
+          <div class="product-category">${p.kategorie || ''}</div>
+          <div class="product-name">${p.produkt_name}</div>
+          <div class="product-desc">${p.beschreibung || ''}</div>
+          <div class="info-row">
+            ${p.material_name ? `<span class="info-chip">🪵 ${p.material_name}</span>` : ''}
+            <span class="info-chip">🎨 ${p.varianten.length} Variante${p.varianten.length!==1?'n':''}</span>
+          </div>
+          <div class="product-footer">
+            <span class="product-price">${preisStr}</span>
+            <span class="stock-badge ${stockClass}">${stockText}</span>
+          </div>
+        </div>
+      </div>
+    `;
+        }).join('');
+    }
+
+    // ════════════════════════════════════════════════════════
+    //  PRODUKT MODAL
+    // ════════════════════════════════════════════════════════
+    let aktivesProdukt = null;
+    let aktiveVariante = null;
+    let aktiveAnzahl   = 1;
+
+    function openProduktModal(produktId) {
+        const varianten = alleProdukte.filter(p => p.produkt_id == produktId);
+        const produkt   = varianten[0];
+        aktivesProdukt  = produkt;
+        aktiveVariante  = null;
+        aktiveAnzahl    = 1;
+
+        document.getElementById('modal-name').textContent = produkt.produkt_name;
+        document.getElementById('produkt-modal').classList.add('open');
+
+        document.getElementById('modal-body').innerHTML = `
+    <div class="info-row" style="margin-bottom:14px">
+      <span class="info-chip">📁 ${produkt.kategorie}</span>
+      ${produkt.material_name ? `<span class="info-chip">🪵 ${produkt.material_name}</span>` : ''}
+    </div>
+    <p style="color:var(--text-muted);font-size:14px;margin-bottom:20px">${produkt.beschreibung || ''}</p>
+
+    <h4 style="font-size:14px;font-weight:500;margin-bottom:10px">Variante wählen</h4>
+    <div class="variante-list">
+      ${varianten.map(v => `
+        <div class="variante-item" id="var-${v.variante_id}" onclick="waehleVariante(${v.variante_id})">
+          <div>
+            <div class="variante-info">${v.farbe || ''}${v.groesse ? ' · ' + v.groesse : ''} <span style="font-family:monospace;font-size:12px;color:var(--text-muted)">${v.sku}</span></div>
+            <div class="variante-sub">${formatEur(v.gesamt_preis)} · ${v.lagerbestand > 0 ? v.lagerbestand + ' auf Lager' : 'Ausverkauft'}</div>
+          </div>
+          <span class="stock-badge ${v.lagerbestand > 5 ? 'stock-ok' : v.lagerbestand > 0 ? 'stock-low' : 'stock-out'}">
+            ${v.lagerbestand > 5 ? '✓ Verfügbar' : v.lagerbestand > 0 ? '⚠ Gering' : '✕ Ausverkauft'}
+          </span>
+        </div>
+      `).join('')}
+    </div>
+
+    <div style="display:flex;align-items:center;gap:14px;margin-top:16px">
+      <div style="display:flex;align-items:center;gap:8px">
+        <label style="font-size:13px;font-weight:500;color:var(--text-muted)">Anzahl:</label>
+        <button class="qty-btn" onclick="anzahlAendern(-1)">−</button>
+        <span id="modal-qty" style="min-width:24px;text-align:center;font-weight:500">1</span>
+        <button class="qty-btn" onclick="anzahlAendern(1)">+</button>
+      </div>
+      <button class="btn btn-primary" onclick="inWarenkorb()" style="flex:1;justify-content:center">
+        🛒 In den Warenkorb
+      </button>
+    </div>
+  `;
+    }
+
+    function waehleVariante(varianteId) {
+        aktiveVariante = alleProdukte.find(p => p.variante_id == varianteId);
+        document.querySelectorAll('.variante-item').forEach(el => el.classList.remove('selected'));
+        document.getElementById('var-' + varianteId).classList.add('selected');
+    }
+
+    function anzahlAendern(delta) {
+        aktiveAnzahl = Math.max(1, aktiveAnzahl + delta);
+        document.getElementById('modal-qty').textContent = aktiveAnzahl;
+    }
+
+    function inWarenkorb() {
+        if (!aktiveVariante) { toast('Bitte eine Variante auswählen', 'info'); return; }
+        if (aktiveVariante.lagerbestand < aktiveAnzahl) { toast('Nicht genug auf Lager!', 'error'); return; }
+
+        const vorhandener = warenkorb.find(i => i.variante_id == aktiveVariante.variante_id);
+        if (vorhandener) {
+            vorhandener.menge += aktiveAnzahl;
+        } else {
+            warenkorb.push({ ...aktiveVariante, menge: aktiveAnzahl });
+        }
+
+        renderWarenkorb();
+        closeModal();
+        toast(`${aktiveVariante.produkt_name} (${aktiveVariante.farbe}) hinzugefügt`, 'success');
+    }
+
+    function closeModal() {
+        document.getElementById('produkt-modal').classList.remove('open');
+    }
+
+    // ════════════════════════════════════════════════════════
+    //  WARENKORB
+    // ════════════════════════════════════════════════════════
+    function renderWarenkorb() {
+        const container = document.getElementById('cart-items');
+        const countEl   = document.getElementById('cart-count');
+        const totalEl   = document.getElementById('cart-total');
+
+        const total = warenkorb.reduce((s, i) => s + i.gesamt_preis * i.menge, 0);
+        const count = warenkorb.reduce((s, i) => s + i.menge, 0);
+
+        countEl.style.display = count > 0 ? 'flex' : 'none';
+        countEl.textContent = count;
+        totalEl.textContent = formatEur(total);
+
+        if (!warenkorb.length) {
+            container.innerHTML = `<div class="empty-state" style="padding:32px 0"><div class="icon">🛒</div><p>Leer</p></div>`;
+            return;
+        }
+
+        container.innerHTML = warenkorb.map((item, idx) => `
+    <div class="cart-item">
+      <div class="cart-item-info" style="flex:1">
+        <div class="cart-item-name">${item.produkt_name}</div>
+        <div class="cart-item-sub">${item.farbe || ''}${item.groesse ? ' · ' + item.groesse : ''}</div>
+        <div class="cart-item-qty">
+          <button class="qty-btn" onclick="mengeAendern(${idx}, -1)">−</button>
+          <span>${item.menge}</span>
+          <button class="qty-btn" onclick="mengeAendern(${idx}, 1)">+</button>
+          <button class="qty-btn" style="margin-left:4px;color:var(--danger)" onclick="ausWarenkorb(${idx})">🗑</button>
+        </div>
+      </div>
+      <div class="cart-item-price">${formatEur(item.gesamt_preis * item.menge)}</div>
+    </div>
+  `).join('');
+    }
+
+    function mengeAendern(idx, delta) {
+        warenkorb[idx].menge += delta;
+        if (warenkorb[idx].menge <= 0) warenkorb.splice(idx, 1);
+        renderWarenkorb();
+    }
+
+    function ausWarenkorb(idx) {
+        warenkorb.splice(idx, 1);
+        renderWarenkorb();
+        aktualisiereBestellformular();
+    }
+
+    function toggleCart() {
+        document.getElementById('cart-panel').classList.toggle('open');
+    }
+
+    // ════════════════════════════════════════════════════════
+    //  KUNDE
+    // ════════════════════════════════════════════════════════
+    let sucheTimeout;
+    const DEMO_KUNDEN = [
+        { kunde_id:1, vorname:'Hans',  nachname:'Müller',  email:'h.mueller@mail.de', telefon:'030-1234', ort:'Berlin' },
+        { kunde_id:2, vorname:'Lisa',  nachname:'Wagner',  email:'l.wagner@mail.de',  telefon:'089-5678', ort:'München' },
+        { kunde_id:3, vorname:'Peter', nachname:'Klein',   email:'p.klein@mail.de',   telefon:'040-9012', ort:'Hamburg' },
+    ];
+
+    function sucheKunde(val) {
+        clearTimeout(sucheTimeout);
+        if (!val) { document.getElementById('kunde-ergebnisse').innerHTML = ''; return; }
+        sucheTimeout = setTimeout(async () => {
+            let kunden;
+            if (DEMO_MODE) {
+                kunden = DEMO_KUNDEN.filter(k =>
+                    k.nachname.toLowerCase().includes(val.toLowerCase()) ||
+                    k.vorname.toLowerCase().includes(val.toLowerCase())
+                );
+            } else {
+                kunden = await apiFetch('/kunden/suchen?name=' + encodeURIComponent(val)).catch(() => []);
+            }
+            const el = document.getElementById('kunde-ergebnisse');
+            el.innerHTML = kunden.length ? kunden.map(k => `
+      <div onclick="kundeWaehlen(${JSON.stringify(k).replace(/"/g,'&quot;')})"
+           style="padding:10px 12px;border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;margin-bottom:6px;font-size:14px;transition:all .15s"
+           onmouseover="this.style.background='var(--accent-light)'" onmouseout="this.style.background=''">
+        <strong>${k.vorname} ${k.nachname}</strong>
+        <span style="color:var(--text-muted);font-size:12px;margin-left:8px">${k.email || ''} · ${k.ort || ''}</span>
+      </div>
+    `).join('') : '<p style="font-size:13px;color:var(--text-muted);padding:6px 0">Keine Kunden gefunden.</p>';
+        }, 300);
+    }
+
+    function kundeWaehlen(kunde) {
+        if (typeof kunde === 'string') kunde = JSON.parse(kunde);
+        ausgewaehlterKunde = kunde;
+        document.getElementById('kunde-ergebnisse').innerHTML = '';
+        document.getElementById('kunde-suche').value = '';
+        document.getElementById('ausgewaehlter-kunde').style.display = 'block';
+        document.getElementById('kunde-anzeige').textContent =
+            `✓ ${kunde.vorname} ${kunde.nachname}  ·  ${kunde.email || ''}  ·  ${kunde.ort || ''}`;
+    }
+
+    function toggleNeuerKunde() {
+        const f = document.getElementById('neuer-kunde-form');
+        f.style.display = f.style.display === 'none' ? 'block' : 'none';
+    }
+
+    async function kundeAnlegen() {
+        const k = {
+            vorname: document.getElementById('nk-vorname').value,
+            nachname: document.getElementById('nk-nachname').value,
+            email:   document.getElementById('nk-email').value,
+            telefon: document.getElementById('nk-telefon').value,
+            strasse: document.getElementById('nk-strasse').value,
+            plz:     document.getElementById('nk-plz').value,
+            ort:     document.getElementById('nk-ort').value,
+        };
+
+        if (!k.vorname || !k.nachname) { toast('Vor- und Nachname erforderlich', 'info'); return; }
+
+        if (DEMO_MODE) {
+            const neueId = DEMO_KUNDEN.length + 1;
+            const neuer  = { ...k, kunde_id: neueId };
+            DEMO_KUNDEN.push(neuer);
+            kundeWaehlen(neuer);
+            document.getElementById('neuer-kunde-form').style.display = 'none';
+            toast('Kunde angelegt (Demo)', 'success');
+            return;
+        }
+
+        try {
+            const res = await apiFetch('/kunden', { method: 'POST', body: JSON.stringify(k) });
+            ausgewaehlterKunde = { ...k, kunde_id: res.kundeId };
+            kundeWaehlen(ausgewaehlterKunde);
+            document.getElementById('neuer-kunde-form').style.display = 'none';
+            toast(res.neu ? 'Neuer Kunde angelegt' : 'Bestehender Kunde gefunden', 'success');
+        } catch (e) {
+            toast('Fehler: ' + e.message, 'error');
+        }
+    }
+
+    // ════════════════════════════════════════════════════════
+    //  BESTELLUNG
+    // ════════════════════════════════════════════════════════
+    function aktualisiereBestellformular() {
+        const el = document.getElementById('order-cart-summary');
+        if (!warenkorb.length) {
+            el.innerHTML = `<div class="empty-state" style="padding:24px 0"><div class="icon">🛒</div><p>Noch keine Produkte gewählt.</p></div>`;
+            return;
+        }
+        const total = warenkorb.reduce((s, i) => s + i.gesamt_preis * i.menge, 0);
+        el.innerHTML = `
+    <table style="width:100%;border-collapse:collapse;font-size:14px">
+      <thead>
+        <tr style="border-bottom:1.5px solid var(--border)">
+          <th style="text-align:left;padding:6px 8px;font-size:12px;font-weight:500;color:var(--text-muted);text-transform:uppercase">Artikel</th>
+          <th style="text-align:center;padding:6px 8px;font-size:12px;font-weight:500;color:var(--text-muted);text-transform:uppercase">Menge</th>
+          <th style="text-align:right;padding:6px 8px;font-size:12px;font-weight:500;color:var(--text-muted);text-transform:uppercase">Preis</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        ${warenkorb.map((item, idx) => `
+          <tr style="border-bottom:1px solid var(--border)">
+            <td style="padding:10px 8px">
+              <strong>${item.produkt_name}</strong><br>
+              <span style="font-size:12px;color:var(--text-muted)">${item.farbe || ''} ${item.groesse ? '· ' + item.groesse : ''}</span>
+            </td>
+            <td style="text-align:center;padding:10px 8px">${item.menge}</td>
+            <td style="text-align:right;padding:10px 8px;font-weight:500">${formatEur(item.gesamt_preis * item.menge)}</td>
+            <td style="padding:10px 8px;text-align:right">
+              <button class="btn btn-ghost btn-sm" onclick="ausWarenkorb(${idx})" style="padding:4px 8px;font-size:12px">✕</button>
+            </td>
+          </tr>
+        `).join('')}
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="2" style="padding:12px 8px;font-weight:600;font-size:15px">Gesamt</td>
+          <td style="padding:12px 8px;text-align:right;font-weight:700;font-size:18px;color:var(--accent)">${formatEur(total)}</td>
+          <td></td>
+        </tr>
+      </tfoot>
+    </table>
+  `;
+    }
+
+    async function bestellungAufgeben() {
+        if (!ausgewaehlterKunde) { toast('Bitte zuerst einen Kunden auswählen', 'info'); return; }
+        if (!warenkorb.length)   { toast('Warenkorb ist leer', 'info'); return; }
+
+        const anfrage = {
+            kundeId:      ausgewaehlterKunde.kunde_id,
+            lagerId:      CURRENT_USER?.lagerId || 1,
+            lieferadresse: document.getElementById('lieferadresse').value,
+            notizen:       document.getElementById('notizen').value,
+            positionen:    warenkorb.map(i => ({ varianteId: i.variante_id, menge: i.menge })),
+        };
+
+        if (DEMO_MODE) {
+            const id = Math.floor(Math.random() * 9000) + 1000;
+            const total = warenkorb.reduce((s, i) => s + i.gesamt_preis * i.menge, 0);
+            DEMO_BESTELLUNGEN.unshift({
+                bestellung_id: id,
+                kunde: `${ausgewaehlterKunde.nachname}, ${ausgewaehlterKunde.vorname}`,
+                erstellt_am: new Date().toLocaleString('de-DE'),
+                status: 'BESTAETIGT',
+                gesamt_betrag: total,
+                positionen: warenkorb.length,
+            });
+            warenkorb = [];
+            ausgewaehlterKunde = null;
+            renderWarenkorb();
+            document.getElementById('ausgewaehlter-kunde').style.display = 'none';
+            toast(`Bestellung ${id} erfolgreich aufgegeben! Gesamt: ${formatEur(total)}`, 'success');
+            showTab('bestellungen');
+            return;
+        }
+
+        try {
+            const res = await apiFetch('/bestellungen', { method: 'POST', body: JSON.stringify(anfrage) });
+            warenkorb = [];
+            ausgewaehlterKunde = null;
+            renderWarenkorb();
+            toast(`Bestellung ${res.bestellungId} erstellt. Gesamt: ${formatEur(res.gesamtBetrag)}`, 'success');
+            showTab('bestellungen');
+        } catch (e) {
+            toast('Fehler: ' + e.message, 'error');
+        }
+    }
+
+    // ════════════════════════════════════════════════════════
+    //  BESTELLUNGEN
+    // ════════════════════════════════════════════════════════
+    async function ladeBestellungen() {
+        const el = document.getElementById('bestellungen-inhalt');
+
+        let bestellungen;
+        if (DEMO_MODE) {
+            bestellungen = DEMO_BESTELLUNGEN;
+        } else {
+            bestellungen = await apiFetch('/bestellungen/alle').catch(() => []);
+        }
+
+        el.innerHTML = `
+    <div style="background:var(--surface2);border-radius:var(--radius-lg);border:1px solid var(--border);overflow:hidden">
+      <table class="order-table">
+        <thead>
+          <tr>
+            <th>Nr.</th>
+            <th>Kunde</th>
+            <th>Datum</th>
+            <th>Positionen</th>
+            <th>Betrag</th>
+            <th>Status</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          ${bestellungen.map(b => `
+            <tr>
+              <td style="font-family:monospace">#${b.bestellung_id}</td>
+              <td>${b.kunde || '—'}</td>
+              <td style="color:var(--text-muted);font-size:13px">${b.erstellt_am || ''}</td>
+              <td>${b.positionen || '—'}</td>
+              <td style="font-weight:500">${formatEur(b.gesamt_betrag)}</td>
+              <td><span class="status-badge status-${b.status}">${b.status}</span></td>
+              <td>
+                ${b.status !== 'STORNIERT' && b.status !== 'GELIEFERT' ? `
+                  <button class="btn btn-danger btn-sm" onclick="bestellungStornieren(${b.bestellung_id})">Stornieren</button>
+                ` : ''}
+              </td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+    }
+
+    async function bestellungStornieren(id) {
+        if (!confirm(`Bestellung #${id} wirklich stornieren?`)) return;
+
+        if (DEMO_MODE) {
+            const b = DEMO_BESTELLUNGEN.find(x => x.bestellung_id == id);
+            if (b) b.status = 'STORNIERT';
+            ladeBestellungen();
+            toast(`Bestellung #${id} storniert`, 'success');
+            return;
+        }
+
+        try {
+            await apiFetch(`/bestellungen/${id}/stornieren?lagerId=1`, { method: 'PUT' });
+            toast(`Bestellung #${id} storniert`, 'success');
+            ladeBestellungen();
+        } catch (e) {
+            toast('Fehler: ' + e.message, 'error');
+        }
+    }
+
+    // ════════════════════════════════════════════════════════
+    //  UTILS
+    // ════════════════════════════════════════════════════════
+    function formatEur(v) {
+        return new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(v);
+    }
+
+    function toast(msg, type = 'info') {
+        const el = document.createElement('div');
+        el.className = `toast toast-${type}`;
+        el.textContent = msg;
+        document.getElementById('toast-container').appendChild(el);
+        setTimeout(() => el.remove(), 4000);
+    }
+</script>
+</body>
+</html>

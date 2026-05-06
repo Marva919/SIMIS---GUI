@@ -679,14 +679,14 @@ create table RABATT (
 /* Table: RUECKGABE                                             */
 /*==============================================================*/
 create table RUECKGABE (
-   REUCKGABEID          NUMBER(20,0)          not null,
+   RUECKGABEID          NUMBER(20,0)          not null,
    VERKAUFID            NUMBER(20,0),
    LAGERID              NUMBER(20,0),
    KUNDEID              NUMBER(20,0),
    DATUM                DATE                  not null,
    GRUND                VARCHAR2(1000)        not null,
    BETRAG_ERSTATTUNG    NUMBER(10,2)          not null,
-   constraint PK_RUECKGABE primary key (REUCKGABEID)
+   constraint PK_RUECKGABE primary key (RUECKGABEID)
 );
 
 /*==============================================================*/
