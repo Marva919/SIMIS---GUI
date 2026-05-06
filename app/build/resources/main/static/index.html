@@ -6,1439 +6,706 @@
     <title>Möbelhaus — Mitarbeiterportal</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg: #f5f1eb;
-            --surface: #faf8f5;
-            --surface2: #ffffff;
-            --border: #e0d9cf;
-            --text: #1a1612;
-            --text-muted: #7a6e62;
-            --accent: #8b5e3c;
-            --accent-light: #f0e6da;
-            --accent-hover: #6e4a2e;
-            --success: #2d6a4f;
-            --success-light: #d8f3dc;
-            --danger: #9b2226;
-            --danger-light: #fde2e4;
-            --warning: #7f4f24;
-            --warning-light: #fff3e4;
-            --shadow: 0 2px 8px rgba(26,22,18,.08);
-            --shadow-lg: 0 8px 32px rgba(26,22,18,.14);
-            --radius: 10px;
-            --radius-lg: 16px;
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-
-        body {
-            font-family: 'DM Sans', sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            min-height: 100vh;
-            font-size: 15px;
-            line-height: 1.6;
-        }
-
-        h1, h2, h3 { font-family: 'Playfair Display', serif; }
-
-        /* ── LOGIN ────────────────────────────────────────────── */
-        #login-page {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, #2c1a0e 0%, #5c3317 60%, #8b5e3c 100%);
-            padding: 24px;
-        }
-
-        .login-card {
-            background: var(--surface2);
-            border-radius: var(--radius-lg);
-            padding: 48px 40px;
-            width: 100%;
-            max-width: 420px;
-            box-shadow: var(--shadow-lg);
-        }
-
-        .login-logo {
-            text-align: center;
-            margin-bottom: 36px;
-        }
-
-        .login-logo h1 {
-            font-size: 28px;
-            color: var(--accent);
-            letter-spacing: -0.5px;
-        }
-
-        .login-logo p {
-            color: var(--text-muted);
-            font-size: 13px;
-            margin-top: 4px;
-            font-weight: 300;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 13px;
-            font-weight: 500;
-            color: var(--text-muted);
-            margin-bottom: 6px;
-            letter-spacing: 0.3px;
-            text-transform: uppercase;
-        }
-
-        .form-group input, .form-group select, .form-group textarea {
-            width: 100%;
-            padding: 11px 14px;
-            border: 1.5px solid var(--border);
-            border-radius: var(--radius);
-            font-family: 'DM Sans', sans-serif;
-            font-size: 15px;
-            color: var(--text);
-            background: var(--surface);
-            transition: border-color .2s, box-shadow .2s;
-            outline: none;
-        }
-
-        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(139,94,60,.1);
-        }
-
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 11px 22px;
-            border-radius: var(--radius);
-            border: none;
-            cursor: pointer;
-            font-family: 'DM Sans', sans-serif;
-            font-size: 14px;
-            font-weight: 500;
-            transition: all .18s;
-            text-decoration: none;
-        }
-
-        .btn-primary {
-            background: var(--accent);
-            color: #fff;
-            width: 100%;
-            justify-content: center;
-            font-size: 15px;
-            padding: 13px;
-        }
-
-        .btn-primary:hover { background: var(--accent-hover); transform: translateY(-1px); box-shadow: var(--shadow); }
-
-        .btn-outline {
-            background: transparent;
-            color: var(--accent);
-            border: 1.5px solid var(--accent);
-        }
-
-        .btn-outline:hover { background: var(--accent-light); }
-
-        .btn-sm { padding: 7px 14px; font-size: 13px; }
-
-        .btn-danger { background: var(--danger); color: #fff; }
-        .btn-danger:hover { background: #7b1a1d; }
-
-        .btn-success { background: var(--success); color: #fff; }
-        .btn-success:hover { background: #1b4332; }
-
-        .btn-ghost { background: transparent; color: var(--text-muted); }
-        .btn-ghost:hover { background: var(--border); color: var(--text); }
-
-        /* ── MAIN APP ─────────────────────────────────────────── */
-        #app { display: none; }
-
-        .topbar {
-            background: var(--surface2);
-            border-bottom: 1px solid var(--border);
-            padding: 0 24px;
-            height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: var(--shadow);
-        }
-
-        .topbar-brand {
-            font-family: 'Playfair Display', serif;
-            font-size: 20px;
-            color: var(--accent);
-            letter-spacing: -0.3px;
-        }
-
-        .topbar-right {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-
-        .user-badge {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 13px;
-            color: var(--text-muted);
-        }
-
-        .user-avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: var(--accent-light);
-            color: var(--accent);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            font-size: 13px;
-        }
-
-        .nav-tabs {
-            display: flex;
-            gap: 4px;
-            padding: 16px 24px 0;
-            border-bottom: 1px solid var(--border);
-            background: var(--surface2);
-        }
-
-        .nav-tab {
-            padding: 9px 18px;
-            font-size: 14px;
-            font-weight: 400;
-            color: var(--text-muted);
-            cursor: pointer;
-            border-bottom: 2px solid transparent;
-            transition: all .18s;
-            border-radius: var(--radius) var(--radius) 0 0;
-            margin-bottom: -1px;
-        }
-
-        .nav-tab:hover { color: var(--accent); background: var(--accent-light); }
-        .nav-tab.active { color: var(--accent); font-weight: 500; border-bottom-color: var(--accent); }
-
-        .content { padding: 28px 24px; max-width: 1280px; margin: 0 auto; }
-
-        /* ── PRODUKT-LISTE ────────────────────────────────────── */
-        .filter-bar {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-            margin-bottom: 24px;
-            align-items: flex-end;
-        }
-
-        .filter-bar .form-group { margin: 0; min-width: 160px; }
-
-        .filter-bar .form-group input, .filter-bar .form-group select {
-            padding: 9px 12px;
-            font-size: 14px;
-        }
-
-        .product-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-        }
-
-        .product-card {
-            background: var(--surface2);
-            border-radius: var(--radius-lg);
-            border: 1px solid var(--border);
-            overflow: hidden;
-            transition: transform .2s, box-shadow .2s;
-            cursor: pointer;
-        }
-
-        .product-card:hover {
-            transform: translateY(-3px);
-            box-shadow: var(--shadow-lg);
-            border-color: var(--accent);
-        }
-
-        .product-img {
-            height: 160px;
-            background: var(--accent-light);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 48px;
-            color: var(--accent);
-        }
-
-        .product-body { padding: 18px; }
-
-        .product-category {
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-            color: var(--text-muted);
-            margin-bottom: 6px;
-            font-weight: 500;
-        }
-
-        .product-name {
-            font-family: 'Playfair Display', serif;
-            font-size: 18px;
-            margin-bottom: 6px;
-            color: var(--text);
-        }
-
-        .product-desc {
-            font-size: 13px;
-            color: var(--text-muted);
-            margin-bottom: 14px;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
-        .product-footer {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .product-price {
-            font-size: 20px;
-            font-weight: 600;
-            color: var(--accent);
-        }
-
-        .stock-badge {
-            font-size: 11px;
-            font-weight: 500;
-            padding: 3px 8px;
-            border-radius: 20px;
-        }
-
-        .stock-ok  { background: var(--success-light); color: var(--success); }
-        .stock-low { background: var(--warning-light); color: var(--warning); }
-        .stock-out { background: var(--danger-light);  color: var(--danger); }
-
-        /* ── PRODUKT MODAL ────────────────────────────────────── */
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(26,22,18,.5);
-            z-index: 200;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 24px;
-        }
-
-        .modal-overlay.open { display: flex; }
-
-        .modal {
-            background: var(--surface2);
-            border-radius: var(--radius-lg);
-            padding: 32px;
-            max-width: 600px;
-            width: 100%;
-            max-height: 85vh;
-            overflow-y: auto;
-            box-shadow: var(--shadow-lg);
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 24px;
-        }
-
-        .modal-title { font-size: 22px; }
-
-        .close-btn {
-            background: none;
-            border: none;
-            font-size: 22px;
-            cursor: pointer;
-            color: var(--text-muted);
-            padding: 4px;
-            border-radius: 6px;
-        }
-
-        .close-btn:hover { background: var(--border); color: var(--text); }
-
-        .variante-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
-
-        .variante-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 12px 16px;
-            border: 1.5px solid var(--border);
-            border-radius: var(--radius);
-            cursor: pointer;
-            transition: all .15s;
-        }
-
-        .variante-item:hover { border-color: var(--accent); background: var(--accent-light); }
-        .variante-item.selected { border-color: var(--accent); background: var(--accent-light); }
-
-        .variante-info { font-size: 14px; }
-        .variante-sub  { font-size: 12px; color: var(--text-muted); }
-
-        /* ── WARENKORB ───────────────────────────────────────── */
-        .cart-panel {
-            background: var(--surface2);
-            border-left: 1px solid var(--border);
-            width: 360px;
-            position: fixed;
-            right: 0;
-            top: 60px;
-            bottom: 0;
-            display: flex;
-            flex-direction: column;
-            padding: 20px;
-            overflow-y: auto;
-            transform: translateX(100%);
-            transition: transform .25s ease;
-        }
-
-        .cart-panel.open { transform: translateX(0); }
-
-        .cart-toggle {
-            position: fixed;
-            right: 20px;
-            bottom: 24px;
-            z-index: 150;
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
-            background: var(--accent);
-            color: #fff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 22px;
-            box-shadow: var(--shadow-lg);
-            border: none;
-            cursor: pointer;
-            transition: all .18s;
-        }
-
-        .cart-toggle:hover { background: var(--accent-hover); transform: scale(1.08); }
-
-        .cart-count {
-            position: absolute;
-            top: -4px;
-            right: -4px;
-            background: var(--danger);
-            color: #fff;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            font-size: 11px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .cart-item {
-            display: flex;
-            gap: 12px;
-            padding: 12px 0;
-            border-bottom: 1px solid var(--border);
-            align-items: flex-start;
-        }
-
-        .cart-item-info { flex: 1; }
-        .cart-item-name { font-size: 14px; font-weight: 500; }
-        .cart-item-sub  { font-size: 12px; color: var(--text-muted); }
-        .cart-item-price { font-size: 14px; font-weight: 600; color: var(--accent); }
-
-        .cart-item-qty {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-top: 6px;
-        }
-
-        .qty-btn {
-            width: 24px;
-            height: 24px;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            background: var(--surface);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            font-weight: 500;
-            transition: all .15s;
-        }
-
-        .qty-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
-
-        .cart-summary {
-            margin-top: 16px;
-            padding-top: 16px;
-            border-top: 1.5px solid var(--border);
-        }
-
-        .cart-total {
-            display: flex;
-            justify-content: space-between;
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 16px;
-        }
-
-        /* ── BESTELLUNG AUFGEBEN ──────────────────────────────── */
-        .order-form { max-width: 640px; }
-
-        /* ── TOAST ───────────────────────────────────────────── */
-        #toast-container {
-            position: fixed;
-            top: 80px;
-            right: 20px;
-            z-index: 999;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .toast {
-            padding: 12px 18px;
-            border-radius: var(--radius);
-            font-size: 14px;
-            font-weight: 500;
-            box-shadow: var(--shadow-lg);
-            animation: slideIn .25s ease;
-            max-width: 320px;
-        }
-
-        @keyframes slideIn { from { transform: translateX(120%); } to { transform: translateX(0); } }
-
-        .toast-success { background: var(--success); color: #fff; }
-        .toast-error   { background: var(--danger);  color: #fff; }
-        .toast-info    { background: var(--accent);  color: #fff; }
-
-        /* ── BESTELLUNGSLISTE ─────────────────────────────────── */
-        .order-table { width: 100%; border-collapse: collapse; }
-
-        .order-table th {
-            text-align: left;
-            padding: 10px 14px;
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            font-weight: 500;
-            color: var(--text-muted);
-            border-bottom: 1.5px solid var(--border);
-        }
-
-        .order-table td {
-            padding: 13px 14px;
-            font-size: 14px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .order-table tr:hover td { background: var(--accent-light); }
-
-        .status-badge {
-            display: inline-block;
-            padding: 3px 10px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
-        }
-
-        .status-NEU          { background: #dbeafe; color: #1e40af; }
-        .status-BESTAETIGT   { background: var(--success-light); color: var(--success); }
-        .status-IN_BEARBEITUNG { background: var(--warning-light); color: var(--warning); }
-        .status-STORNIERT    { background: var(--danger-light); color: var(--danger); }
-        .status-GELIEFERT    { background: #e0e7ff; color: #3730a3; }
-
-        /* ── UTILS ───────────────────────────────────────────── */
-        .section-header {
-            display: flex;
-            align-items: baseline;
-            justify-content: space-between;
-            margin-bottom: 20px;
-        }
-
-        .section-title { font-size: 24px; }
-        .section-sub   { font-size: 14px; color: var(--text-muted); margin-top: 2px; }
-
-        .empty-state {
-            text-align: center;
-            padding: 64px 0;
-            color: var(--text-muted);
-        }
-
-        .empty-state .icon { font-size: 48px; margin-bottom: 12px; }
-        .empty-state p     { font-size: 15px; }
-
-        .info-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
-
-        .info-chip {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            padding: 4px 10px;
-            border-radius: 20px;
-            background: var(--accent-light);
-            color: var(--accent);
-            font-size: 12px;
-            font-weight: 500;
-        }
-
-        .divider { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
-
-        .loading { display: flex; align-items: center; gap: 10px; color: var(--text-muted); padding: 32px 0; justify-content: center; }
-
-        @media (max-width: 700px) {
-            .product-grid { grid-template-columns: 1fr; }
-            .cart-panel { width: 100%; }
-            .filter-bar { flex-direction: column; }
-            .content { padding: 16px; }
-        }
+        :root{--bg:#f5f1eb;--sf:#faf8f5;--s2:#fff;--bd:#e0d9cf;--tx:#1a1612;--mu:#7a6e62;--ac:#8b5e3c;--al:#f0e6da;--ah:#6e4a2e;--ok:#2d6a4f;--okl:#d8f3dc;--er:#9b2226;--erl:#fde2e4;--wn:#7f4f24;--wnl:#fff3e4;--r:10px;--rl:16px}
+        *{box-sizing:border-box;margin:0;padding:0}
+        body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);font-size:15px;line-height:1.6;min-height:100vh}
+        h1,h2,h3{font-family:'Playfair Display',serif}
+        /* LOGIN */
+        #login{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#2c1a0e 0%,#5c3317 60%,#8b5e3c 100%);padding:24px}
+        .card{background:#fff;border-radius:var(--rl);padding:44px 38px;width:100%;max-width:400px;box-shadow:0 8px 32px rgba(0,0,0,.2)}
+        .logo{text-align:center;margin-bottom:32px}
+        .logo h1{font-size:26px;color:var(--ac)}
+        .logo p{color:var(--mu);font-size:13px;margin-top:3px}
+        .fg{margin-bottom:18px}
+        .fg label{display:block;font-size:12px;font-weight:500;color:var(--mu);margin-bottom:5px;text-transform:uppercase;letter-spacing:.3px}
+        .fg input,.fg select,.fg textarea{width:100%;padding:10px 13px;border:1.5px solid var(--bd);border-radius:var(--r);font-family:'DM Sans',sans-serif;font-size:14px;color:var(--tx);background:var(--sf);outline:none;transition:border-color .2s}
+        .fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--ac)}
+        .btn{display:inline-flex;align-items:center;gap:7px;padding:10px 20px;border-radius:var(--r);border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;transition:all .18s}
+        .btn-p{background:var(--ac);color:#fff;width:100%;justify-content:center;padding:13px;font-size:15px}
+        .btn-p:hover{background:var(--ah);transform:translateY(-1px)}
+        .btn-o{background:transparent;color:var(--ac);border:1.5px solid var(--ac)}
+        .btn-o:hover{background:var(--al)}
+        .btn-s{padding:7px 13px;font-size:13px}
+        .btn-ok{background:var(--ok);color:#fff}.btn-ok:hover{background:#1b4332}
+        .btn-er{background:var(--er);color:#fff}.btn-er:hover{background:#7b1a1d}
+        .btn-g{background:transparent;color:var(--mu)}.btn-g:hover{background:var(--bd);color:var(--tx)}
+        .err{display:none;margin-top:10px;padding:10px;background:var(--erl);color:var(--er);border-radius:var(--r);font-size:13px;text-align:center}
+        /* APP */
+        #app{display:none}
+        .topbar{background:#fff;border-bottom:1px solid var(--bd);padding:0 20px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(26,22,18,.07)}
+        .brand{font-family:'Playfair Display',serif;font-size:19px;color:var(--ac)}
+        .ubadge{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--mu)}
+        .uav{width:30px;height:30px;border-radius:50%;background:var(--al);color:var(--ac);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:12px}
+        .chip{display:inline-flex;align-items:center;padding:3px 9px;border-radius:20px;background:var(--al);color:var(--ac);font-size:11px;font-weight:500}
+        .tabs{display:flex;gap:2px;padding:14px 20px 0;border-bottom:1px solid var(--bd);background:#fff}
+        .tab{padding:8px 16px;font-size:14px;color:var(--mu);cursor:pointer;border-bottom:2px solid transparent;border-radius:var(--r) var(--r) 0 0;margin-bottom:-1px;transition:all .18s}
+        .tab:hover{color:var(--ac);background:var(--al)}.tab.on{color:var(--ac);font-weight:500;border-bottom-color:var(--ac)}
+        .content{padding:24px 20px;max-width:1200px;margin:0 auto}
+        .sh{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:18px}
+        .st{font-size:22px}.ss{font-size:13px;color:var(--mu);margin-top:2px}
+        /* FILTER BAR */
+        .fbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;align-items:flex-end}
+        .fbar .fg{margin:0;min-width:140px}.fbar .fg input,.fbar .fg select{padding:8px 11px;font-size:13px}
+        /* PRODUCT GRID */
+        .pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px}
+        .pc{background:#fff;border-radius:var(--rl);border:1px solid var(--bd);overflow:hidden;cursor:pointer;transition:transform .2s,box-shadow .2s,border-color .2s}
+        .pc:hover{transform:translateY(-3px);box-shadow:0 8px 28px rgba(26,22,18,.13);border-color:var(--ac)}
+        .pimg{height:140px;display:flex;align-items:center;justify-content:center;font-size:44px}
+        .pbody{padding:16px}
+        .pcat{font-size:11px;text-transform:uppercase;letter-spacing:.7px;color:var(--mu);margin-bottom:5px;font-weight:500}
+        .pname{font-family:'Playfair Display',serif;font-size:17px;margin-bottom:5px}
+        .pdesc{font-size:12px;color:var(--mu);margin-bottom:12px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+        .pfoot{display:flex;align-items:center;justify-content:space-between}
+        .pprice{font-size:19px;font-weight:600;color:var(--ac)}
+        .sba{font-size:11px;font-weight:500;padding:3px 8px;border-radius:20px}
+        .s-ok{background:var(--okl);color:var(--ok)}.s-low{background:var(--wnl);color:var(--wn)}.s-out{background:var(--erl);color:var(--er)}
+        /* MODAL */
+        .ov{position:fixed;inset:0;background:rgba(26,22,18,.5);z-index:200;display:none;align-items:center;justify-content:center;padding:20px}
+        .ov.open{display:flex}
+        .modal{background:#fff;border-radius:var(--rl);padding:28px;max-width:560px;width:100%;max-height:82vh;overflow-y:auto;box-shadow:0 8px 40px rgba(0,0,0,.2)}
+        .mh{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px}
+        .mtitle{font-size:20px}
+        .xbtn{background:none;border:none;font-size:20px;cursor:pointer;color:var(--mu);padding:4px;border-radius:6px}.xbtn:hover{background:var(--bd)}
+        .vlist{display:flex;flex-direction:column;gap:7px;margin-bottom:18px}
+        .vi{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border:1.5px solid var(--bd);border-radius:var(--r);cursor:pointer;transition:all .15s}
+        .vi:hover,.vi.sel{border-color:var(--ac);background:var(--al)}
+        .vi-info{font-size:13px}.vi-sub{font-size:12px;color:var(--mu)}
+        /* CART */
+        .cpanel{background:#fff;border-left:1px solid var(--bd);width:320px;position:fixed;right:0;top:56px;bottom:0;display:flex;flex-direction:column;padding:18px;overflow-y:auto;transform:translateX(100%);transition:transform .25s ease;z-index:90}
+        .cpanel.open{transform:translateX(0)}
+        .ci{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--bd);align-items:flex-start}
+        .cn{font-size:13px;font-weight:500}.csub{font-size:11px;color:var(--mu)}
+        .cqty{display:flex;align-items:center;gap:7px;margin-top:5px}
+        .qb{width:22px;height:22px;border:1px solid var(--bd);border-radius:6px;background:var(--sf);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;transition:all .15s}
+        .qb:hover{background:var(--ac);color:#fff;border-color:var(--ac)}
+        .csum{margin-top:14px;padding-top:14px;border-top:1.5px solid var(--bd)}
+        .ctot-row{display:flex;justify-content:space-between;font-size:17px;font-weight:600;margin-bottom:14px}
+        /* BESTELLUNG FORM */
+        .oform{max-width:600px}
+        .ksearch{display:flex;gap:8px;margin-bottom:7px}
+        .kr-item{padding:9px 11px;border:1px solid var(--bd);border-radius:var(--r);cursor:pointer;margin-bottom:5px;font-size:13px;transition:all .15s}
+        .kr-item:hover{background:var(--al);border-color:var(--ac)}
+        .ksel{padding:12px;background:var(--okl);border-radius:var(--r);margin-bottom:18px;font-size:13px;display:none}
+        .nkf{display:none;background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);padding:14px;margin-bottom:14px}
+        .nkgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+        .nkgrid .fg{margin:0}.nkgrid .fg.wide{grid-column:span 2}
+        hr{border:none;border-top:1px solid var(--bd);margin:18px 0}
+        /* VERKAUF TABLE */
+        .vtbl{width:100%;border-collapse:collapse}
+        .vtbl th{text-align:left;padding:8px 12px;font-size:11px;text-transform:uppercase;letter-spacing:.4px;font-weight:500;color:var(--mu);border-bottom:1.5px solid var(--bd)}
+        .vtbl td{padding:11px 12px;font-size:13px;border-bottom:1px solid var(--bd)}
+        .vtbl tr:hover td{background:var(--al)}
+        .stbadge{display:inline-block;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.3px}
+        .ST-Y{background:var(--okl);color:var(--ok)}.ST-N{background:var(--erl);color:var(--er)}
+        /* TOAST */
+        #tc{position:fixed;top:70px;right:14px;z-index:999;display:flex;flex-direction:column;gap:7px}
+        .toast{padding:11px 16px;border-radius:var(--r);font-size:13px;font-weight:500;box-shadow:0 4px 16px rgba(0,0,0,.15);animation:tIn .22s ease;max-width:300px}
+        @keyframes tIn{from{transform:translateX(110%)}to{transform:translateX(0)}}
+        .t-ok{background:var(--ok);color:#fff}.t-er{background:var(--er);color:#fff}.t-inf{background:var(--ac);color:#fff}
+        /* CART TOGGLE */
+        #ctog{position:fixed;right:16px;bottom:20px;z-index:150;width:52px;height:52px;border-radius:50%;background:var(--ac);color:#fff;border:none;cursor:pointer;font-size:20px;box-shadow:0 6px 24px rgba(0,0,0,.2);transition:all .18s}
+        #ctog:hover{background:var(--ah);transform:scale(1.07)}
+        .cc{position:absolute;top:-4px;right:-4px;background:var(--er);color:#fff;width:19px;height:19px;border-radius:50%;font-size:10px;font-weight:600;display:none;align-items:center;justify-content:center}
+        .icrow{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+        .ichip{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:20px;background:var(--al);color:var(--ac);font-size:11px;font-weight:500}
     </style>
 </head>
 <body>
 
-<!-- ════════════════════════════════ LOGIN ════════════════════════════════ -->
-<div id="login-page">
-    <div class="login-card">
-        <div class="login-logo">
-            <h1>🪑 Möbelhaus</h1>
-            <p>Mitarbeiterportal · Intern</p>
-        </div>
-        <div class="form-group">
-            <label>E-Mail</label>
-            <input type="email" id="login-email" placeholder="max.mustermann@moebelhaus.de" value="max.mustermann@moebelhaus.de">
-        </div>
-        <div class="form-group">
-            <label>Passwort</label>
-            <input type="password" id="login-passwort" placeholder="••••••••" value="admin123">
-        </div>
-        <button class="btn btn-primary" onclick="login()">Anmelden</button>
-        <p style="text-align:center;font-size:12px;color:var(--text-muted);margin-top:16px">Demo: max.mustermann@moebelhaus.de / admin123</p>
-        <div id="login-error" style="display:none;margin-top:12px;padding:10px;background:var(--danger-light);color:var(--danger);border-radius:var(--radius);font-size:13px;text-align:center"></div>
+<!-- LOGIN -->
+<div id="login">
+    <div class="card">
+        <div class="logo"><h1>🪑 Möbelhaus</h1><p>Mitarbeiterportal · Intern</p></div>
+        <div class="fg"><label>E-Mail</label><input type="email" id="le" value="max.mustermann@moebelhaus.de"></div>
+        <div class="fg"><label>Passwort</label><input type="password" id="lp" value="admin123"></div>
+        <button class="btn btn-p" onclick="doLogin()">Anmelden</button>
+        <p style="text-align:center;font-size:11px;color:var(--mu);margin-top:12px">Demo: max.mustermann@moebelhaus.de / admin123</p>
+        <div class="err" id="lerr"></div>
     </div>
 </div>
 
-<!-- ════════════════════════════════ APP ════════════════════════════════ -->
+<!-- APP -->
 <div id="app">
     <div class="topbar">
-        <span class="topbar-brand">🪑 Möbelhaus</span>
-        <div class="topbar-right">
-            <div class="user-badge">
-                <div class="user-avatar" id="user-avatar">M</div>
-                <span id="user-name">Mitarbeiter</span>
-                <span class="info-chip" id="user-rolle" style="font-size:10px">MITARBEITER</span>
-            </div>
-            <button class="btn btn-ghost btn-sm" onclick="logout()">Abmelden</button>
+        <span class="brand">🪑 Möbelhaus</span>
+        <div class="ubadge">
+            <div class="uav" id="uav">M</div>
+            <span id="uname">Mitarbeiter</span>
+            <span class="chip" id="urolle">MANAGER</span>
+            <button class="btn btn-g btn-s" onclick="doLogout()">Abmelden</button>
         </div>
     </div>
-
-    <div class="nav-tabs">
-        <div class="nav-tab active" onclick="showTab('produkte')">🛋 Produkte</div>
-        <div class="nav-tab" onclick="showTab('bestellung')">📋 Neue Bestellung</div>
-        <div class="nav-tab" onclick="showTab('bestellungen')">📦 Bestellungen</div>
+    <div class="tabs">
+        <div class="tab on"  onclick="gotoTab('produkte')">🛋 Produkte</div>
+        <div class="tab"     onclick="gotoTab('bestellung')">📋 Neue Bestellung</div>
+        <div class="tab"     onclick="gotoTab('verkaeufe')">📦 Verkäufe</div>
     </div>
 
-    <!-- ─── TAB: PRODUKTE ─── -->
-    <div id="tab-produkte" class="content">
-        <div class="section-header">
-            <div>
-                <h2 class="section-title">Produktkatalog</h2>
-                <p class="section-sub" id="produkt-count">Produkte werden geladen…</p>
-            </div>
+    <!-- PRODUKTE -->
+    <div id="t-produkte" class="content">
+        <div class="sh"><div><h2 class="st">Produktkatalog</h2><p class="ss" id="pcount"></p></div></div>
+        <div class="fbar">
+            <div class="fg" style="flex:1;min-width:180px"><label>Suche</label><input type="text" id="fs" placeholder="Name…" oninput="filterP()"></div>
+            <div class="fg"><label>Kategorie</label><select id="fk" onchange="filterP()"><option value="">Alle</option></select></div>
+            <div class="fg"><label>Min. Preis €</label><input type="number" id="fmin" placeholder="0" oninput="filterP()" style="width:100px"></div>
+            <div class="fg"><label>Max. Preis €</label><input type="number" id="fmax" placeholder="9999" oninput="filterP()" style="width:100px"></div>
         </div>
-        <div class="filter-bar">
-            <div class="form-group" style="flex:1;min-width:200px">
-                <label>Suche</label>
-                <input type="text" id="filter-suche" placeholder="Name oder Beschreibung…" oninput="filterProdukte()">
+        <div id="pgrid" class="pgrid"></div>
+    </div>
+
+    <!-- NEUE BESTELLUNG -->
+    <div id="t-bestellung" class="content" style="display:none">
+        <div class="sh"><div><h2 class="st">Bestellung aufgeben</h2><p class="ss">Kunde wählen und Artikel aus dem Warenkorb bestellen</p></div></div>
+        <div class="oform">
+            <h3 style="font-size:15px;font-weight:500;margin-bottom:12px;font-family:'DM Sans',sans-serif">1. Kunde</h3>
+            <div class="ksearch">
+                <div class="fg" style="flex:1;margin:0"><input type="text" id="ks" placeholder="Nachname suchen…" oninput="sucheK(this.value)"></div>
+                <button class="btn btn-o btn-s" onclick="toggleNK()">+ Neuer Kunde</button>
             </div>
-            <div class="form-group">
-                <label>Kategorie</label>
-                <select id="filter-kategorie" onchange="filterProdukte()">
-                    <option value="">Alle</option>
+            <div id="kres"></div>
+            <div class="nkf" id="nkf">
+                <p style="font-size:12px;font-weight:500;margin-bottom:10px;color:var(--mu)">Neuen Kunden anlegen</p>
+                <div class="nkgrid">
+                    <div class="fg"><label>Vorname</label><input id="nkv" type="text"></div>
+                    <div class="fg"><label>Nachname</label><input id="nkn" type="text"></div>
+                    <div class="fg"><label>E-Mail</label><input id="nke" type="email"></div>
+                    <div class="fg"><label>Telefon</label><input id="nkt" type="text"></div>
+                    <div class="fg wide"><label>Adresse</label><input id="nka" type="text"></div>
+                    <div class="fg"><label>PLZ</label><input id="nkp" type="text"></div>
+                    <div class="fg"><label>Ort</label><input id="nko" type="text"></div>
+                    <div class="fg"><label>Land</label><input id="nkl" type="text" value="Deutschland"></div>
+                    <div class="fg"><label>Passwort (Kundenportal)</label><input id="nkpw" type="text" placeholder="temp123"></div>
+                </div>
+                <button class="btn btn-p" style="margin-top:12px;width:auto;padding:9px 18px" onclick="kundeAnlegen()">Kunden anlegen</button>
+            </div>
+            <div class="ksel" id="ksel"><strong id="kselname"></strong></div>
+            <hr>
+            <h3 style="font-size:15px;font-weight:500;margin-bottom:12px;font-family:'DM Sans',sans-serif">2. Bestellpositionen</h3>
+            <div id="ocart"></div>
+            <hr>
+            <h3 style="font-size:15px;font-weight:500;margin-bottom:12px;font-family:'DM Sans',sans-serif">3. Zahlungsart</h3>
+            <div class="fg">
+                <label>Zahlungsart</label>
+                <select id="zahlungsart">
+                    <option value="2">EC-Karte</option>
+                    <option value="1">Bar</option>
+                    <option value="3">Kreditkarte</option>
+                    <option value="4">Rechnung</option>
+                    <option value="5">Finanzierung</option>
                 </select>
             </div>
-            <div class="form-group">
-                <label>Min. Preis (€)</label>
-                <input type="number" id="filter-min" placeholder="0" oninput="filterProdukte()" style="width:110px">
-            </div>
-            <div class="form-group">
-                <label>Max. Preis (€)</label>
-                <input type="number" id="filter-max" placeholder="9999" oninput="filterProdukte()" style="width:110px">
-            </div>
-        </div>
-        <div id="product-grid" class="product-grid">
-            <div class="loading">⏳ Lade Produkte…</div>
+            <button class="btn btn-ok" style="width:100%;font-size:15px;padding:13px;margin-top:8px" onclick="bestellungAufgeben()">✅ Verkauf abschließen</button>
         </div>
     </div>
 
-    <!-- ─── TAB: NEUE BESTELLUNG ─── -->
-    <div id="tab-bestellung" class="content" style="display:none">
-        <div class="section-header">
-            <div>
-                <h2 class="section-title">Bestellung aufgeben</h2>
-                <p class="section-sub">Kunde auswählen und Produkte aus dem Warenkorb bestellen</p>
-            </div>
+    <!-- VERKÄUFE -->
+    <div id="t-verkaeufe" class="content" style="display:none">
+        <div class="sh">
+            <div><h2 class="st">Verkäufe</h2><p class="ss">Alle Verkäufe der Filiale</p></div>
+            <button class="btn btn-o btn-s" onclick="ladeVerkaeufe()">↺ Aktualisieren</button>
         </div>
-        <div class="order-form">
-
-            <!-- Kundenauswahl -->
-            <h3 style="font-size:16px;margin-bottom:14px;font-family:'DM Sans',sans-serif;font-weight:500">1. Kunde</h3>
-            <div style="display:flex;gap:10px;margin-bottom:8px">
-                <div class="form-group" style="flex:1;margin:0">
-                    <input type="text" id="kunde-suche" placeholder="Name suchen…" oninput="sucheKunde(this.value)">
-                </div>
-                <button class="btn btn-outline btn-sm" onclick="toggleNeuerKunde()">+ Neuer Kunde</button>
-            </div>
-            <div id="kunde-ergebnisse" style="margin-bottom:12px"></div>
-
-            <div id="neuer-kunde-form" style="display:none;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:16px">
-                <p style="font-size:13px;font-weight:500;margin-bottom:12px;color:var(--text-muted)">Neuen Kunden anlegen</p>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-                    <div class="form-group" style="margin:0"><label>Vorname</label><input type="text" id="nk-vorname"></div>
-                    <div class="form-group" style="margin:0"><label>Nachname</label><input type="text" id="nk-nachname"></div>
-                    <div class="form-group" style="margin:0"><label>E-Mail</label><input type="email" id="nk-email"></div>
-                    <div class="form-group" style="margin:0"><label>Telefon</label><input type="text" id="nk-telefon"></div>
-                    <div class="form-group" style="margin:0;grid-column:span 2"><label>Straße</label><input type="text" id="nk-strasse"></div>
-                    <div class="form-group" style="margin:0"><label>PLZ</label><input type="text" id="nk-plz"></div>
-                    <div class="form-group" style="margin:0"><label>Ort</label><input type="text" id="nk-ort"></div>
-                </div>
-                <button class="btn btn-primary" style="margin-top:14px;width:auto;padding:9px 20px" onclick="kundeAnlegen()">Kunden anlegen</button>
-            </div>
-
-            <div id="ausgewaehlter-kunde" style="display:none;padding:14px;background:var(--success-light);border-radius:var(--radius);margin-bottom:20px;font-size:14px">
-                <strong id="kunde-anzeige"></strong>
-            </div>
-
-            <hr class="divider">
-
-            <!-- Warenkorb Summary -->
-            <h3 style="font-size:16px;margin-bottom:14px;font-family:'DM Sans',sans-serif;font-weight:500">2. Bestellpositionen</h3>
-            <div id="order-cart-summary">
-                <div class="empty-state" style="padding:24px 0">
-                    <div class="icon">🛒</div>
-                    <p>Keine Produkte im Warenkorb.<br>Gehe zum Produktkatalog und wähle Artikel aus.</p>
-                </div>
-            </div>
-
-            <hr class="divider">
-
-            <!-- Lieferdetails -->
-            <h3 style="font-size:16px;margin-bottom:14px;font-family:'DM Sans',sans-serif;font-weight:500">3. Lieferdetails</h3>
-            <div class="form-group">
-                <label>Lieferadresse (optional)</label>
-                <input type="text" id="lieferadresse" placeholder="Abweichende Lieferadresse…">
-            </div>
-            <div class="form-group">
-                <label>Notizen</label>
-                <textarea id="notizen" rows="3" placeholder="Bemerkungen zur Bestellung…" style="resize:vertical"></textarea>
-            </div>
-
-            <button class="btn btn-success" style="width:100%;font-size:15px;padding:14px" onclick="bestellungAufgeben()">
-                ✅ Bestellung verbindlich aufgeben
-            </button>
-        </div>
-    </div>
-
-    <!-- ─── TAB: BESTELLUNGEN ─── -->
-    <div id="tab-bestellungen" class="content" style="display:none">
-        <div class="section-header">
-            <div>
-                <h2 class="section-title">Bestellungen</h2>
-                <p class="section-sub">Alle Bestellungen der Filiale</p>
-            </div>
-            <button class="btn btn-outline btn-sm" onclick="ladeBestellungen()">↺ Aktualisieren</button>
-        </div>
-        <div id="bestellungen-inhalt">
-            <div class="loading">⏳ Lade Bestellungen…</div>
-        </div>
+        <div id="vtbl" style="background:#fff;border-radius:var(--rl);border:1px solid var(--bd);overflow:hidden"></div>
     </div>
 </div>
 
-<!-- ─── PRODUKT-MODAL ─── -->
-<div class="modal-overlay" id="produkt-modal" onclick="if(event.target===this)closeModal()">
+<!-- PRODUKT MODAL -->
+<div class="ov" id="pmodal" onclick="if(event.target===this)closeM()">
     <div class="modal">
-        <div class="modal-header">
-            <h2 class="modal-title" id="modal-name"></h2>
-            <button class="close-btn" onclick="closeModal()">✕</button>
-        </div>
-        <div id="modal-body"></div>
+        <div class="mh"><h2 class="mtitle" id="mname"></h2><button class="xbtn" onclick="closeM()">✕</button></div>
+        <div id="mbody"></div>
     </div>
 </div>
 
-<!-- ─── WARENKORB-PANEL ─── -->
-<div id="cart-panel" class="cart-panel">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
-        <h3 style="font-size:18px">🛒 Warenkorb</h3>
-        <button class="btn btn-ghost btn-sm" onclick="toggleCart()">✕</button>
+<!-- WARENKORB -->
+<div id="cpanel" class="cpanel">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+        <h3 style="font-size:17px">🛒 Warenkorb</h3>
+        <button class="btn btn-g btn-s" onclick="toggleCart()">✕</button>
     </div>
-    <div id="cart-items" style="flex:1;overflow-y:auto"></div>
-    <div class="cart-summary">
-        <div class="cart-total">
-            <span>Gesamt</span>
-            <span id="cart-total">0,00 €</span>
-        </div>
-        <button class="btn btn-success" style="width:100%" onclick="showTab('bestellung');toggleCart()">
-            Zur Bestellung →
-        </button>
+    <div id="citems" style="flex:1;overflow-y:auto"></div>
+    <div class="csum">
+        <div class="ctot-row"><span>Gesamt</span><span id="ctot">0,00 €</span></div>
+        <button class="btn btn-ok" style="width:100%" onclick="gotoTab('bestellung');toggleCart()">Zur Bestellung →</button>
     </div>
 </div>
 
-<button class="cart-toggle" onclick="toggleCart()" style="position:relative">
-    🛒
-    <span class="cart-count" id="cart-count" style="display:none">0</span>
-</button>
+<div style="position:fixed;right:16px;bottom:20px;z-index:150">
+    <button id="ctog" onclick="toggleCart()" style="position:relative">
+        🛒<span class="cc" id="cc">0</span>
+    </button>
+</div>
 
-<div id="toast-container"></div>
+<div id="tc"></div>
 
 <script>
-    // ════════════════════════════════════════════════════════
+    // ══════════════════════════════════════════════════════
     //  Config
-    // ════════════════════════════════════════════════════════
-    const API = 'http://localhost:8080/api';
-    let TOKEN = localStorage.getItem('jwt_token');
-    let CURRENT_USER = JSON.parse(localStorage.getItem('current_user') || 'null');
+    // ══════════════════════════════════════════════════════
+    const API  = 'http://localhost:8080/api';
+    const DEMO = true;   // false → echtes Backend
+    let TOKEN = localStorage.getItem('token');
+    let USER  = JSON.parse(localStorage.getItem('user') || 'null');
 
-    // ── Demo-Modus (ohne echtes Backend) ────────────────────
-    const DEMO_MODE = false;   // auf false setzen, wenn Backend läuft
-
-    // ════════════════════════════════════════════════════════
-    //  Demo-Daten
-    // ════════════════════════════════════════════════════════
-    const DEMO_PRODUKTE = [
-        { produkt_id:1, produkt_name:'Bett NORDIC',  kategorie:'Schlafzimmer', beschreibung:'Skandinavisches Bett aus Eiche massiv, zeitloses Design', material_name:'Eiche massiv', variante_id:1, sku:'NORDIC-80-NAT',  farbe:'Natur', groesse:'80x200 cm',  gesamt_preis:899,  lagerbestand:15 },
-        { produkt_id:1, produkt_name:'Bett NORDIC',  kategorie:'Schlafzimmer', beschreibung:'Skandinavisches Bett aus Eiche massiv, zeitloses Design', material_name:'Eiche massiv', variante_id:2, sku:'NORDIC-90-NAT',  farbe:'Natur', groesse:'90x200 cm',  gesamt_preis:949,  lagerbestand:10 },
-        { produkt_id:1, produkt_name:'Bett NORDIC',  kategorie:'Schlafzimmer', beschreibung:'Skandinavisches Bett aus Eiche massiv, zeitloses Design', material_name:'Eiche massiv', variante_id:3, sku:'NORDIC-160-NAT', farbe:'Natur', groesse:'160x200 cm', gesamt_preis:1049, lagerbestand:8  },
-        { produkt_id:2, produkt_name:'Bett METRO',   kategorie:'Schlafzimmer', beschreibung:'Modernes Polsterbett mit Stoffbezug, inkl. Lattenrost',   material_name:'Baumwollstoff', variante_id:5, sku:'METRO-140-GR',  farbe:'Grau',  groesse:'140x200 cm', gesamt_preis:649,  lagerbestand:12 },
-        { produkt_id:2, produkt_name:'Bett METRO',   kategorie:'Schlafzimmer', beschreibung:'Modernes Polsterbett mit Stoffbezug, inkl. Lattenrost',   material_name:'Baumwollstoff', variante_id:7, sku:'METRO-160-AN',  farbe:'Anthrazit', groesse:'160x200 cm', gesamt_preis:729, lagerbestand:6  },
-        { produkt_id:3, produkt_name:'Esstisch OSLO',kategorie:'Esszimmer',    beschreibung:'Massivholztisch aus Eiche, ausziehbar 160–220 cm',       material_name:'Eiche massiv', variante_id:9, sku:'OSLO-120-NAT',  farbe:'Natur', groesse:'60x120 cm',  gesamt_preis:1299, lagerbestand:20 },
-        { produkt_id:3, produkt_name:'Esstisch OSLO',kategorie:'Esszimmer',    beschreibung:'Massivholztisch aus Eiche, ausziehbar 160–220 cm',       material_name:'Eiche massiv', variante_id:11,sku:'OSLO-160-WS',   farbe:'Weiß',  groesse:'80x160 cm',  gesamt_preis:1499, lagerbestand:14 },
-        { produkt_id:4, produkt_name:'Stuhl SIGRID', kategorie:'Esszimmer',    beschreibung:'Stapelbarer Stuhl, Stahlgestell mit Stoffsitz',           material_name:'Baumwollstoff', variante_id:12,sku:'SIGRID-GR',    farbe:'Grau',  groesse:null,         gesamt_preis:149,  lagerbestand:30 },
-        { produkt_id:4, produkt_name:'Stuhl SIGRID', kategorie:'Esszimmer',    beschreibung:'Stapelbarer Stuhl, Stahlgestell mit Stoffsitz',           material_name:'Baumwollstoff', variante_id:13,sku:'SIGRID-SW',    farbe:'Schwarz', groesse:null,       gesamt_preis:149,  lagerbestand:25 },
-        { produkt_id:4, produkt_name:'Stuhl SIGRID', kategorie:'Esszimmer',    beschreibung:'Stapelbarer Stuhl, Stahlgestell mit Stoffsitz',           material_name:'Baumwollstoff', variante_id:14,sku:'SIGRID-BL',    farbe:'Blau',  groesse:null,         gesamt_preis:159,  lagerbestand:20 },
-        { produkt_id:5, produkt_name:'Sofa COMFORT', kategorie:'Wohnzimmer',   beschreibung:'L-Sofa mit Schlaffunktion, 5 Sitzer',                    material_name:'Baumwollstoff', variante_id:15,sku:'COMFORT-HG',   farbe:'Hellgrau', groesse:null,      gesamt_preis:1799, lagerbestand:6  },
-        { produkt_id:5, produkt_name:'Sofa COMFORT', kategorie:'Wohnzimmer',   beschreibung:'L-Sofa mit Schlaffunktion, 5 Sitzer',                    material_name:'Baumwollstoff', variante_id:16,sku:'COMFORT-DB',   farbe:'Dunkelblau', groesse:null,    gesamt_preis:1899, lagerbestand:4  },
-        { produkt_id:6, produkt_name:'Regal CUBE',   kategorie:'Wohnzimmer',   beschreibung:'Würfelregal MDF weiß hochglanz, modular erweiterbar',    material_name:'MDF lackiert', variante_id:17, sku:'CUBE-S-WS',   farbe:'Weiß',  groesse:'S',          gesamt_preis:249,  lagerbestand:22 },
-        { produkt_id:6, produkt_name:'Regal CUBE',   kategorie:'Wohnzimmer',   beschreibung:'Würfelregal MDF weiß hochglanz, modular erweiterbar',    material_name:'MDF lackiert', variante_id:18, sku:'CUBE-M-WS',   farbe:'Weiß',  groesse:'M',          gesamt_preis:299,  lagerbestand:18 },
-        { produkt_id:6, produkt_name:'Regal CUBE',   kategorie:'Wohnzimmer',   beschreibung:'Würfelregal MDF weiß hochglanz, modular erweiterbar',    material_name:'MDF lackiert', variante_id:19, sku:'CUBE-L-WS',   farbe:'Weiß',  groesse:'L',          gesamt_preis:349,  lagerbestand:15 },
+    // ══════════════════════════════════════════════════════
+    //  Demo-Daten (spiegeln das echte Schema wider)
+    // ══════════════════════════════════════════════════════
+    const D_KATEGORIEN = [
+        {kategorieId:1,kategorieName:'Schlafzimmer'},
+        {kategorieId:2,kategorieName:'Esszimmer'},
+        {kategorieId:3,kategorieName:'Wohnzimmer'},
+        {kategorieId:4,kategorieName:'Büro'},
     ];
 
-    const DEMO_BESTELLUNGEN = [
-        { bestellung_id:1001, kunde:'Müller, Hans', erstellt_am:'2024-11-14 10:23', status:'BESTAETIGT',    gesamt_betrag:1199.00, positionen:2 },
-        { bestellung_id:1002, kunde:'Wagner, Lisa', erstellt_am:'2024-11-13 15:07', status:'IN_BEARBEITUNG', gesamt_betrag:3598.00, positionen:3 },
-        { bestellung_id:1003, kunde:'Klein, Peter', erstellt_am:'2024-11-12 09:45', status:'GELIEFERT',     gesamt_betrag:447.00,  positionen:3 },
-        { bestellung_id:1004, kunde:'Braun, Anna',  erstellt_am:'2024-11-11 14:30', status:'STORNIERT',     gesamt_betrag:899.00,  positionen:1 },
+    // Felder aus SP_PRODUKT_SUCHEN:
+    // produktid, produktname, beschreibung, basis_preis, kategoriename,
+    // rabatt_prozent, varianteid, preisvariante, endpreis,
+    // farbenid, farbebezeichnung, hexcode,
+    // material, groesseid, breite_cm, hoehe_cm, tiefe_cm, groesse_beschreibung, bestand
+    const D_PRODUKTE = [
+        {produktid:1,produktname:'Bett NORDIC',  beschreibung:'Skandinavisches Massivholzbett aus Eiche',kategoriename:'Schlafzimmer',rabatt_prozent:0, varianteid:1, preisvariante:899,  endpreis:899,  farbebezeichnung:'Natur',    hexcode:'C8A882',material:'Eiche massiv',  breite_cm:80, hoehe_cm:45,tiefe_cm:200,groesse_beschreibung:'80×200 cm',  bestand:15},
+        {produktid:1,produktname:'Bett NORDIC',  beschreibung:'Skandinavisches Massivholzbett aus Eiche',kategoriename:'Schlafzimmer',rabatt_prozent:0, varianteid:2, preisvariante:949,  endpreis:949,  farbebezeichnung:'Natur',    hexcode:'C8A882',material:'Eiche massiv',  breite_cm:90, hoehe_cm:45,tiefe_cm:200,groesse_beschreibung:'90×200 cm',  bestand:10},
+        {produktid:1,produktname:'Bett NORDIC',  beschreibung:'Skandinavisches Massivholzbett aus Eiche',kategoriename:'Schlafzimmer',rabatt_prozent:0, varianteid:3, preisvariante:1049, endpreis:1049, farbebezeichnung:'Natur',    hexcode:'C8A882',material:'Eiche massiv',  breite_cm:160,hoehe_cm:45,tiefe_cm:200,groesse_beschreibung:'160×200 cm', bestand:8},
+        {produktid:1,produktname:'Bett NORDIC',  beschreibung:'Skandinavisches Massivholzbett aus Eiche',kategoriename:'Schlafzimmer',rabatt_prozent:0, varianteid:4, preisvariante:1099, endpreis:1099, farbebezeichnung:'Natur',    hexcode:'C8A882',material:'Eiche massiv',  breite_cm:180,hoehe_cm:45,tiefe_cm:200,groesse_beschreibung:'180×200 cm', bestand:4},
+        {produktid:2,produktname:'Bett METRO',   beschreibung:'Polsterbett mit Stoffbezug inkl. Lattenrost',kategoriename:'Schlafzimmer',rabatt_prozent:0,varianteid:5, preisvariante:649,  endpreis:649,  farbebezeichnung:'Grau',     hexcode:'8C8C8C',material:'Baumwollstoff', breite_cm:140,hoehe_cm:45,tiefe_cm:200,groesse_beschreibung:'140×200 cm', bestand:12},
+        {produktid:2,produktname:'Bett METRO',   beschreibung:'Polsterbett mit Stoffbezug inkl. Lattenrost',kategoriename:'Schlafzimmer',rabatt_prozent:0,varianteid:6, preisvariante:729,  endpreis:729,  farbebezeichnung:'Grau',     hexcode:'8C8C8C',material:'Baumwollstoff', breite_cm:160,hoehe_cm:45,tiefe_cm:200,groesse_beschreibung:'160×200 cm', bestand:7},
+        {produktid:2,produktname:'Bett METRO',   beschreibung:'Polsterbett mit Stoffbezug inkl. Lattenrost',kategoriename:'Schlafzimmer',rabatt_prozent:0,varianteid:7, preisvariante:729,  endpreis:729,  farbebezeichnung:'Anthrazit', hexcode:'3D3D3D',material:'Baumwollstoff', breite_cm:160,hoehe_cm:45,tiefe_cm:200,groesse_beschreibung:'160×200 cm', bestand:6},
+        {produktid:3,produktname:'Esstisch OSLO',beschreibung:'Massivholztisch aus Eiche, ausziehbar',   kategoriename:'Esszimmer',   rabatt_prozent:10,varianteid:9, preisvariante:1299, endpreis:1169, farbebezeichnung:'Natur',    hexcode:'C8A882',material:'Eiche massiv',  breite_cm:120,hoehe_cm:75,tiefe_cm:80, groesse_beschreibung:'120×80 cm',  bestand:20},
+        {produktid:3,produktname:'Esstisch OSLO',beschreibung:'Massivholztisch aus Eiche, ausziehbar',   kategoriename:'Esszimmer',   rabatt_prozent:10,varianteid:10,preisvariante:1499, endpreis:1349, farbebezeichnung:'Natur',    hexcode:'C8A882',material:'Eiche massiv',  breite_cm:160,hoehe_cm:75,tiefe_cm:80, groesse_beschreibung:'160×80 cm',  bestand:14},
+        {produktid:3,produktname:'Esstisch OSLO',beschreibung:'Massivholztisch aus Eiche, ausziehbar',   kategoriename:'Esszimmer',   rabatt_prozent:10,varianteid:11,preisvariante:1499, endpreis:1349, farbebezeichnung:'Weiß',     hexcode:'FFFFFF',material:'MDF lackiert',  breite_cm:160,hoehe_cm:75,tiefe_cm:80, groesse_beschreibung:'160×80 cm',  bestand:9},
+        {produktid:4,produktname:'Stuhl SIGRID', beschreibung:'Stapelbarer Stuhl, Stahlgestell Stoffsitz', kategoriename:'Esszimmer', rabatt_prozent:0, varianteid:12,preisvariante:149,  endpreis:149,  farbebezeichnung:'Grau',     hexcode:'8C8C8C',material:'Stahl / Stoff', breite_cm:50, hoehe_cm:90,tiefe_cm:55, groesse_beschreibung:'Standard',   bestand:30},
+        {produktid:4,produktname:'Stuhl SIGRID', beschreibung:'Stapelbarer Stuhl, Stahlgestell Stoffsitz', kategoriename:'Esszimmer', rabatt_prozent:0, varianteid:13,preisvariante:149,  endpreis:149,  farbebezeichnung:'Schwarz',  hexcode:'000000',material:'Stahl / Stoff', breite_cm:50, hoehe_cm:90,tiefe_cm:55, groesse_beschreibung:'Standard',   bestand:25},
+        {produktid:4,produktname:'Stuhl SIGRID', beschreibung:'Stapelbarer Stuhl, Stahlgestell Stoffsitz', kategoriename:'Esszimmer', rabatt_prozent:0, varianteid:14,preisvariante:159,  endpreis:159,  farbebezeichnung:'Blau',     hexcode:'3A6EA5',material:'Stahl / Stoff', breite_cm:50, hoehe_cm:90,tiefe_cm:55, groesse_beschreibung:'Standard',   bestand:20},
+        {produktid:5,produktname:'Sofa COMFORT', beschreibung:'L-Sofa mit Schlaffunktion, 5 Sitzer',      kategoriename:'Wohnzimmer',  rabatt_prozent:0, varianteid:15,preisvariante:1799, endpreis:1799, farbebezeichnung:'Hellgrau', hexcode:'C0C0C0',material:'Baumwollstoff', breite_cm:280,hoehe_cm:85,tiefe_cm:160,groesse_beschreibung:'L-Form',    bestand:6},
+        {produktid:5,produktname:'Sofa COMFORT', beschreibung:'L-Sofa mit Schlaffunktion, 5 Sitzer',      kategoriename:'Wohnzimmer',  rabatt_prozent:0, varianteid:16,preisvariante:1899, endpreis:1899, farbebezeichnung:'Dunkelblau',hexcode:'1A2E5A',material:'Baumwollstoff', breite_cm:280,hoehe_cm:85,tiefe_cm:160,groesse_beschreibung:'L-Form',    bestand:4},
+        {produktid:6,produktname:'Regal CUBE',   beschreibung:'Würfelregal MDF weiß hochglanz, modular',  kategoriename:'Wohnzimmer',  rabatt_prozent:0, varianteid:17,preisvariante:249,  endpreis:249,  farbebezeichnung:'Weiß',     hexcode:'FFFFFF',material:'MDF lackiert',  breite_cm:40, hoehe_cm:160,tiefe_cm:30,groesse_beschreibung:'S (40cm)',   bestand:22},
+        {produktid:6,produktname:'Regal CUBE',   beschreibung:'Würfelregal MDF weiß hochglanz, modular',  kategoriename:'Wohnzimmer',  rabatt_prozent:0, varianteid:18,preisvariante:299,  endpreis:299,  farbebezeichnung:'Weiß',     hexcode:'FFFFFF',material:'MDF lackiert',  breite_cm:80, hoehe_cm:160,tiefe_cm:30,groesse_beschreibung:'M (80cm)',   bestand:18},
+        {produktid:7,produktname:'Schrank GRANDE',beschreibung:'Schwebetürschrank mit Spiegel, 3-türig',  kategoriename:'Schlafzimmer',rabatt_prozent:0, varianteid:19,preisvariante:1099, endpreis:1099, farbebezeichnung:'Weiß',     hexcode:'FFFFFF',material:'MDF lackiert',  breite_cm:200,hoehe_cm:220,tiefe_cm:62,groesse_beschreibung:'200×62 cm', bestand:8},
+        {produktid:7,produktname:'Schrank GRANDE',beschreibung:'Schwebetürschrank mit Spiegel, 3-türig',  kategoriename:'Schlafzimmer',rabatt_prozent:0, varianteid:20,preisvariante:1149, endpreis:1149, farbebezeichnung:'Anthrazit', hexcode:'3D3D3D',material:'MDF lackiert',  breite_cm:200,hoehe_cm:220,tiefe_cm:62,groesse_beschreibung:'200×62 cm', bestand:5},
     ];
 
-    // ════════════════════════════════════════════════════════
+    const D_KUNDEN = [
+        {kundeid:1,vorname:'Hans', nachname:'Müller', email:'h.mueller@mail.de', ort:'Berlin',  telefonnummer:'030-111222'},
+        {kundeid:2,vorname:'Lisa', nachname:'Wagner', email:'l.wagner@mail.de',  ort:'München', telefonnummer:'089-333444'},
+        {kundeid:3,vorname:'Peter',nachname:'Klein',  email:'p.klein@mail.de',   ort:'Hamburg', telefonnummer:'040-555666'},
+    ];
+
+    let D_VERKAEUFE = [
+        {verkaufid:1001,kundeid:1,kunde:'Müller, Hans', verkaufsdatum:'2024-11-14',zahlungstatus:'Y',anzahl:2,gesamt:1199},
+        {verkaufid:1002,kundeid:2,kunde:'Wagner, Lisa', verkaufsdatum:'2024-11-13',zahlungstatus:'Y',anzahl:3,gesamt:3598},
+        {verkaufid:1003,kundeid:3,kunde:'Klein, Peter', verkaufsdatum:'2024-11-12',zahlungstatus:'Y',anzahl:3,gesamt:447},
+        {verkaufid:1004,kundeid:1,kunde:'Müller, Hans', verkaufsdatum:'2024-11-11',zahlungstatus:'N',anzahl:1,gesamt:899},
+    ];
+
+    // ══════════════════════════════════════════════════════
     //  State
-    // ════════════════════════════════════════════════════════
+    // ══════════════════════════════════════════════════════
     let alleProdukte = [];
-    let warenkorb = [];
-    let ausgewaehlterKunde = null;
+    let warenkorb    = [];
+    let aktKunde     = null;
+    let aktVariante  = null;
+    let aktMenge     = 1;
 
-    // ════════════════════════════════════════════════════════
-    //  API
-    // ════════════════════════════════════════════════════════
-    async function apiFetch(path, opts = {}) {
-        if (DEMO_MODE) return null;
-        const res = await fetch(API + path, {
+    // ══════════════════════════════════════════════════════
+    //  API Helper
+    // ══════════════════════════════════════════════════════
+    async function api(path, opts={}) {
+        const res = await fetch(API+path, {
             ...opts,
-            headers: {
-                'Content-Type': 'application/json',
-                ...(TOKEN ? { Authorization: 'Bearer ' + TOKEN } : {}),
-                ...(opts.headers || {}),
-            },
+            headers:{'Content-Type':'application/json',
+                ...(TOKEN ? {Authorization:'Bearer '+TOKEN} : {}),
+                ...(opts.headers||{})},
         });
-        if (!res.ok) {
-            const err = await res.json().catch(() => ({ error: res.statusText }));
-            throw new Error(err.error || 'Fehler ' + res.status);
-        }
+        if (!res.ok) { const e=await res.json().catch(()=>({error:res.statusText})); throw new Error(e.error||'Fehler'); }
         return res.json();
     }
 
-    // ════════════════════════════════════════════════════════
-    //  AUTH
-    // ════════════════════════════════════════════════════════
-    async function login() {
-        const email    = document.getElementById('login-email').value;
-        const passwort = document.getElementById('login-passwort').value;
-        const errEl    = document.getElementById('login-error');
-        errEl.style.display = 'none';
-
-        if (DEMO_MODE) {
-            if (email === 'max.mustermann@moebelhaus.de' && passwort === 'admin123') {
-                CURRENT_USER = { name: 'Max Mustermann', rolle: 'MANAGER', angestellterId: 1, filialeId: 1, lagerId: 1 };
-                localStorage.setItem('current_user', JSON.stringify(CURRENT_USER));
-                TOKEN = 'demo-token';
+    // ══════════════════════════════════════════════════════
+    //  LOGIN / LOGOUT
+    // ══════════════════════════════════════════════════════
+    async function doLogin() {
+        const email=document.getElementById('le').value, pw=document.getElementById('lp').value;
+        const err=document.getElementById('lerr'); err.style.display='none';
+        if (DEMO) {
+            if (email==='max.mustermann@moebelhaus.de' && pw==='admin123') {
+                USER={name:'Max Mustermann',rolle:'MANAGER',angestellterId:1,filialeId:1,lagerId:1};
+                TOKEN='demo'; localStorage.setItem('token',TOKEN); localStorage.setItem('user',JSON.stringify(USER));
                 showApp();
-            } else {
-                errEl.textContent = 'Ungültige Anmeldedaten';
-                errEl.style.display = 'block';
-            }
+            } else { err.textContent='Ungültige Anmeldedaten'; err.style.display='block'; }
             return;
         }
-
         try {
-            const data = await apiFetch('/auth/login', {
-                method: 'POST',
-                body: JSON.stringify({ email, passwort }),
-            });
-            TOKEN = data.token;
-            localStorage.setItem('jwt_token', TOKEN);
+            const d=await api('/auth/login',{method:'POST',body:JSON.stringify({email,passwort:pw})});
+            TOKEN=d.token; localStorage.setItem('token',TOKEN);
+            const me=await api('/auth/me');
+            USER={name:me.vorname+' '+me.nachname,rolle:me.rolle,angestellterId:me.angestellterId,filialeId:me.filialeId,lagerId:me.lagerId};
+            localStorage.setItem('user',JSON.stringify(USER));
             showApp();
-        } catch (e) {
-            errEl.textContent = e.message;
-            errEl.style.display = 'block';
-        }
+        } catch(e){err.textContent=e.message; err.style.display='block';}
     }
 
-    function logout() {
-        TOKEN = null;
-        CURRENT_USER = null;
-        localStorage.clear();
-        document.getElementById('app').style.display = 'none';
-        document.getElementById('login-page').style.display = 'flex';
-    }
+    function doLogout(){TOKEN=null;USER=null;localStorage.clear();document.getElementById('app').style.display='none';document.getElementById('login').style.display='flex';}
 
-    function showApp() {
-        document.getElementById('login-page').style.display = 'none';
-        document.getElementById('app').style.display = 'block';
-        const u = CURRENT_USER;
-        if (u) {
-            document.getElementById('user-name').textContent = u.name || 'Mitarbeiter';
-            document.getElementById('user-rolle').textContent = u.rolle || 'MITARBEITER';
-            document.getElementById('user-avatar').textContent = (u.name || 'M')[0].toUpperCase();
-        }
+    function showApp(){
+        document.getElementById('login').style.display='none';
+        document.getElementById('app').style.display='block';
+        document.getElementById('uname').textContent=USER?.name||'Mitarbeiter';
+        document.getElementById('urolle').textContent=USER?.rolle||'MITARBEITER';
+        document.getElementById('uav').textContent=(USER?.name||'M')[0].toUpperCase();
         ladeProdukte();
     }
+    if(TOKEN&&USER) showApp();
 
-    // Auto-login wenn Token vorhanden
-    if (TOKEN && CURRENT_USER) showApp();
-
-    // ════════════════════════════════════════════════════════
-    //  NAVIGATION
-    // ════════════════════════════════════════════════════════
-    function showTab(tab) {
-        ['produkte','bestellung','bestellungen'].forEach(t => {
-            document.getElementById('tab-' + t).style.display = t === tab ? 'block' : 'none';
+    // ══════════════════════════════════════════════════════
+    //  TABS
+    // ══════════════════════════════════════════════════════
+    function gotoTab(t){
+        ['produkte','bestellung','verkaeufe'].forEach(x=>{
+            document.getElementById('t-'+x).style.display=x===t?'block':'none';
         });
-        document.querySelectorAll('.nav-tab').forEach((el, i) => {
-            el.classList.toggle('active', ['produkte','bestellung','bestellungen'][i] === tab);
+        document.querySelectorAll('.tab').forEach((el,i)=>{
+            el.classList.toggle('on',['produkte','bestellung','verkaeufe'][i]===t);
         });
-        if (tab === 'bestellungen') ladeBestellungen();
-        if (tab === 'bestellung') aktualisiereBestellformular();
+        if(t==='verkaeufe') ladeVerkaeufe();
+        if(t==='bestellung') renderOCart();
     }
 
-    // ════════════════════════════════════════════════════════
+    // ══════════════════════════════════════════════════════
     //  PRODUKTE
-    // ════════════════════════════════════════════════════════
-    async function ladeProdukte() {
-        if (DEMO_MODE) {
-            alleProdukte = DEMO_PRODUKTE;
-            renderProdukte(alleProdukte);
-            ladeKategorien();
-            return;
-        }
-        try {
-            alleProdukte = await apiFetch('/produkte?lagerId=1');
-            renderProdukte(alleProdukte);
-            ladeKategorien();
-        } catch (e) {
-            toast('Fehler beim Laden der Produkte: ' + e.message, 'error');
-        }
+    // ══════════════════════════════════════════════════════
+    async function ladeProdukte(){
+        alleProdukte = DEMO ? D_PRODUKTE : await api('/produkte?lagerId='+(USER?.lagerId||1));
+        renderProdukte(alleProdukte);
+        ladeKategorien();
     }
 
-    async function ladeKategorien() {
-        const kategorien = DEMO_MODE
-            ? [...new Set(alleProdukte.map(p => p.kategorie))]
-            : await apiFetch('/produkte/kategorien');
-
-        const sel = document.getElementById('filter-kategorie');
-        kategorien.forEach(k => {
-            const opt = document.createElement('option');
-            opt.value = k; opt.textContent = k;
-            sel.appendChild(opt);
+    async function ladeKategorien(){
+        const kats = DEMO ? D_KATEGORIEN : await api('/produkte/kategorien');
+        const sel=document.getElementById('fk');
+        kats.forEach(k=>{
+            const o=document.createElement('option');
+            o.value=k.kategorieId||k.kategorie_id;
+            o.textContent=k.kategorieName||k.kategoriename;
+            sel.appendChild(o);
         });
     }
 
-    function filterProdukte() {
-        const suche    = document.getElementById('filter-suche').value.toLowerCase();
-        const kat      = document.getElementById('filter-kategorie').value;
-        const min      = parseFloat(document.getElementById('filter-min').value) || 0;
-        const max      = parseFloat(document.getElementById('filter-max').value) || 999999;
-
-        const gefiltert = alleProdukte.filter(p => {
-            const matchSuche = !suche || p.produkt_name.toLowerCase().includes(suche) || (p.beschreibung||'').toLowerCase().includes(suche);
-            const matchKat   = !kat   || p.kategorie === kat;
-            const matchPreis = p.gesamt_preis >= min && p.gesamt_preis <= max;
-            return matchSuche && matchKat && matchPreis;
-        });
-
-        renderProdukte(gefiltert);
+    function filterP(){
+        const s=(document.getElementById('fs').value||'').toLowerCase();
+        const k=document.getElementById('fk').value;
+        const mn=parseFloat(document.getElementById('fmin').value)||0;
+        const mx=parseFloat(document.getElementById('fmax').value)||999999;
+        renderProdukte(alleProdukte.filter(p=>
+            (!s||(p.produktname||'').toLowerCase().includes(s)||(p.beschreibung||'').toLowerCase().includes(s))&&
+            (!k||String(p.kategorieid||'')==k||p.kategoriename===document.getElementById('fk').selectedOptions[0]?.text)&&
+            p.endpreis>=mn&&p.endpreis<=mx
+        ));
     }
 
-    function renderProdukte(produkte) {
-        const grid = document.getElementById('product-grid');
-        document.getElementById('produkt-count').textContent = produkte.length + ' Varianten gefunden';
+    const KATICONS={Schlafzimmer:'🛏',Esszimmer:'🍽',Wohnzimmer:'🛋',Büro:'💼'};
 
-        if (!produkte.length) {
-            grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="icon">🔍</div><p>Keine Produkte gefunden.</p></div>`;
-            return;
-        }
+    function renderProdukte(rows){
+        document.getElementById('pcount').textContent=rows.length+' Einträge';
+        if(!rows.length){document.getElementById('pgrid').innerHTML='<div style="grid-column:1/-1;text-align:center;padding:48px;color:var(--mu)">🔍 Keine Produkte gefunden.</div>';return;}
 
-        // Produkte nach Produkt-ID gruppieren für kompaktere Anzeige
-        const grouped = {};
-        produkte.forEach(p => {
-            if (!grouped[p.produkt_id]) grouped[p.produkt_id] = { ...p, varianten: [] };
-            grouped[p.produkt_id].varianten.push(p);
+        // Nach PRODUKTID gruppieren
+        const grouped={};
+        rows.forEach(r=>{
+            if(!grouped[r.produktid]) grouped[r.produktid]={...r,varianten:[]};
+            grouped[r.produktid].varianten.push(r);
         });
 
-        const kategorieIcons = { 'Schlafzimmer':'🛏', 'Esszimmer':'🍽', 'Wohnzimmer':'🛋', 'Büro':'💼' };
+        document.getElementById('pgrid').innerHTML=Object.values(grouped).map(p=>{
+            const minP=Math.min(...p.varianten.map(v=>v.endpreis));
+            const maxP=Math.max(...p.varianten.map(v=>v.endpreis));
+            const bestand=p.varianten.reduce((s,v)=>s+(v.bestand||0),0);
+            const sc=bestand>10?'s-ok':bestand>0?'s-low':'s-out';
+            const stxt=bestand>0?bestand+' auf Lager':'Ausverkauft';
+            const prStr=minP===maxP?eur(minP):'ab '+eur(minP);
+            const hatRabatt=p.varianten.some(v=>v.rabatt_prozent>0);
+            const icon=KATICONS[p.kategoriename]||'🪑';
+            // Farbkreise
+            const farben=[...new Map(p.varianten.map(v=>[v.farbebezeichnung,v.hexcode])).entries()];
 
-        grid.innerHTML = Object.values(grouped).map(p => {
-            const minPreis = Math.min(...p.varianten.map(v => v.gesamt_preis));
-            const maxPreis = Math.max(...p.varianten.map(v => v.gesamt_preis));
-            const gesamtBestand = p.varianten.reduce((s, v) => s + (v.lagerbestand||0), 0);
-            const stockClass = gesamtBestand > 10 ? 'stock-ok' : gesamtBestand > 0 ? 'stock-low' : 'stock-out';
-            const stockText  = gesamtBestand > 0 ? gesamtBestand + ' auf Lager' : 'Ausverkauft';
-            const preisStr   = minPreis === maxPreis ? formatEur(minPreis) : 'ab ' + formatEur(minPreis);
-            const icon       = kategorieIcons[p.kategorie] || '🪑';
-
-            return `
-      <div class="product-card" onclick="openProduktModal(${p.produkt_id})">
-        <div class="product-img">${icon}</div>
-        <div class="product-body">
-          <div class="product-category">${p.kategorie || ''}</div>
-          <div class="product-name">${p.produkt_name}</div>
-          <div class="product-desc">${p.beschreibung || ''}</div>
-          <div class="info-row">
-            ${p.material_name ? `<span class="info-chip">🪵 ${p.material_name}</span>` : ''}
-            <span class="info-chip">🎨 ${p.varianten.length} Variante${p.varianten.length!==1?'n':''}</span>
-          </div>
-          <div class="product-footer">
-            <span class="product-price">${preisStr}</span>
-            <span class="stock-badge ${stockClass}">${stockText}</span>
-          </div>
+            return `<div class="pc" onclick="openModal(${p.produktid})">
+      <div class="pimg" style="background:#${p.hexcode}22">${icon}</div>
+      <div class="pbody">
+        <div class="pcat">${p.kategoriename}</div>
+        <div class="pname">${p.produktname}</div>
+        <div class="pdesc">${p.beschreibung||''}</div>
+        <div class="icrow">
+          <span class="ichip">🪵 ${p.material||''}</span>
+          <span class="ichip">🎨 ${p.varianten.length} Var.</span>
+          ${hatRabatt?`<span class="ichip" style="background:var(--erl);color:var(--er)">% Rabatt</span>`:''}
+        </div>
+        <div style="display:flex;gap:6px;margin-bottom:12px">
+          ${farben.map(([name,hex])=>`<div title="${name}" style="width:16px;height:16px;border-radius:50%;background:#${hex};border:1.5px solid var(--bd)"></div>`).join('')}
+        </div>
+        <div class="pfoot">
+          <span class="pprice">${prStr}</span>
+          <span class="sba ${sc}">${stxt}</span>
         </div>
       </div>
-    `;
+    </div>`;
         }).join('');
     }
 
-    // ════════════════════════════════════════════════════════
+    // ══════════════════════════════════════════════════════
     //  PRODUKT MODAL
-    // ════════════════════════════════════════════════════════
-    let aktivesProdukt = null;
-    let aktiveVariante = null;
-    let aktiveAnzahl   = 1;
+    // ══════════════════════════════════════════════════════
+    function openModal(pid){
+        const varianten=alleProdukte.filter(p=>p.produktid==pid);
+        const p=varianten[0];
+        aktVariante=null; aktMenge=1;
+        document.getElementById('mname').textContent=p.produktname;
+        document.getElementById('pmodal').classList.add('open');
 
-    function openProduktModal(produktId) {
-        const varianten = alleProdukte.filter(p => p.produkt_id == produktId);
-        const produkt   = varianten[0];
-        aktivesProdukt  = produkt;
-        aktiveVariante  = null;
-        aktiveAnzahl    = 1;
-
-        document.getElementById('modal-name').textContent = produkt.produkt_name;
-        document.getElementById('produkt-modal').classList.add('open');
-
-        document.getElementById('modal-body').innerHTML = `
-    <div class="info-row" style="margin-bottom:14px">
-      <span class="info-chip">📁 ${produkt.kategorie}</span>
-      ${produkt.material_name ? `<span class="info-chip">🪵 ${produkt.material_name}</span>` : ''}
+        document.getElementById('mbody').innerHTML=`
+    <div class="icrow" style="margin-bottom:14px">
+      <span class="ichip">📁 ${p.kategoriename}</span>
+      <span class="ichip">🪵 ${p.material}</span>
     </div>
-    <p style="color:var(--text-muted);font-size:14px;margin-bottom:20px">${produkt.beschreibung || ''}</p>
-
-    <h4 style="font-size:14px;font-weight:500;margin-bottom:10px">Variante wählen</h4>
-    <div class="variante-list">
-      ${varianten.map(v => `
-        <div class="variante-item" id="var-${v.variante_id}" onclick="waehleVariante(${v.variante_id})">
+    <p style="color:var(--mu);font-size:13px;margin-bottom:18px">${p.beschreibung||''}</p>
+    <h4 style="font-size:13px;font-weight:500;margin-bottom:10px">Variante wählen</h4>
+    <div class="vlist">
+      ${varianten.map(v=>`
+        <div class="vi" id="vi-${v.varianteid}" onclick="waehleV(${v.varianteid})">
           <div>
-            <div class="variante-info">${v.farbe || ''}${v.groesse ? ' · ' + v.groesse : ''} <span style="font-family:monospace;font-size:12px;color:var(--text-muted)">${v.sku}</span></div>
-            <div class="variante-sub">${formatEur(v.gesamt_preis)} · ${v.lagerbestand > 0 ? v.lagerbestand + ' auf Lager' : 'Ausverkauft'}</div>
+            <div class="vi-info" style="display:flex;align-items:center;gap:8px">
+              <div style="width:14px;height:14px;border-radius:50%;background:#${v.hexcode};border:1.5px solid var(--bd);flex-shrink:0"></div>
+              <strong>${v.farbebezeichnung}</strong>
+              <span style="font-size:12px;color:var(--mu)">${v.groesse_beschreibung} · ${v.breite_cm}×${v.tiefe_cm} cm</span>
+            </div>
+            <div class="vi-sub" style="margin-top:3px">
+              ${v.rabatt_prozent>0?`<s style="color:var(--mu)">${eur(v.preisvariante)}</s> → `:''}
+              <strong>${eur(v.endpreis)}</strong>
+              ${v.rabatt_prozent>0?`<span style="color:var(--er);font-size:11px"> (${v.rabatt_prozent}% Rabatt)</span>`:''}
+              · ${v.bestand>0?v.bestand+' auf Lager':'Ausverkauft'}
+            </div>
           </div>
-          <span class="stock-badge ${v.lagerbestand > 5 ? 'stock-ok' : v.lagerbestand > 0 ? 'stock-low' : 'stock-out'}">
-            ${v.lagerbestand > 5 ? '✓ Verfügbar' : v.lagerbestand > 0 ? '⚠ Gering' : '✕ Ausverkauft'}
+          <span class="sba ${v.bestand>5?'s-ok':v.bestand>0?'s-low':'s-out'}">
+            ${v.bestand>5?'✓':v.bestand>0?'⚠':'✕'}
           </span>
         </div>
       `).join('')}
     </div>
-
-    <div style="display:flex;align-items:center;gap:14px;margin-top:16px">
+    <div style="display:flex;align-items:center;gap:14px;margin-top:14px">
       <div style="display:flex;align-items:center;gap:8px">
-        <label style="font-size:13px;font-weight:500;color:var(--text-muted)">Anzahl:</label>
-        <button class="qty-btn" onclick="anzahlAendern(-1)">−</button>
-        <span id="modal-qty" style="min-width:24px;text-align:center;font-weight:500">1</span>
-        <button class="qty-btn" onclick="anzahlAendern(1)">+</button>
+        <label style="font-size:13px;font-weight:500;color:var(--mu)">Anzahl:</label>
+        <button class="qb" onclick="chgM(-1)">−</button>
+        <span id="mq" style="min-width:22px;text-align:center;font-weight:500">1</span>
+        <button class="qb" onclick="chgM(1)">+</button>
       </div>
-      <button class="btn btn-primary" onclick="inWarenkorb()" style="flex:1;justify-content:center">
-        🛒 In den Warenkorb
-      </button>
-    </div>
-  `;
+      <button class="btn btn-p" onclick="addCart()" style="flex:1;justify-content:center">🛒 In den Warenkorb</button>
+    </div>`;
     }
 
-    function waehleVariante(varianteId) {
-        aktiveVariante = alleProdukte.find(p => p.variante_id == varianteId);
-        document.querySelectorAll('.variante-item').forEach(el => el.classList.remove('selected'));
-        document.getElementById('var-' + varianteId).classList.add('selected');
+    function waehleV(vid){
+        aktVariante=alleProdukte.find(p=>p.varianteid==vid);
+        document.querySelectorAll('.vi').forEach(e=>e.classList.remove('sel'));
+        document.getElementById('vi-'+vid).classList.add('sel');
     }
-
-    function anzahlAendern(delta) {
-        aktiveAnzahl = Math.max(1, aktiveAnzahl + delta);
-        document.getElementById('modal-qty').textContent = aktiveAnzahl;
+    function chgM(d){aktMenge=Math.max(1,aktMenge+d);document.getElementById('mq').textContent=aktMenge;}
+    function addCart(){
+        if(!aktVariante){toast('Bitte Variante wählen','inf');return;}
+        if(aktVariante.bestand<aktMenge){toast('Nicht genug auf Lager!','er');return;}
+        const ex=warenkorb.find(i=>i.varianteid==aktVariante.varianteid);
+        if(ex) ex.menge+=aktMenge;
+        else warenkorb.push({...aktVariante,menge:aktMenge});
+        renderCart(); closeM();
+        toast(`${aktVariante.produktname} (${aktVariante.farbebezeichnung}) hinzugefügt`,'ok');
     }
+    function closeM(){document.getElementById('pmodal').classList.remove('open');}
 
-    function inWarenkorb() {
-        if (!aktiveVariante) { toast('Bitte eine Variante auswählen', 'info'); return; }
-        if (aktiveVariante.lagerbestand < aktiveAnzahl) { toast('Nicht genug auf Lager!', 'error'); return; }
-
-        const vorhandener = warenkorb.find(i => i.variante_id == aktiveVariante.variante_id);
-        if (vorhandener) {
-            vorhandener.menge += aktiveAnzahl;
-        } else {
-            warenkorb.push({ ...aktiveVariante, menge: aktiveAnzahl });
-        }
-
-        renderWarenkorb();
-        closeModal();
-        toast(`${aktiveVariante.produkt_name} (${aktiveVariante.farbe}) hinzugefügt`, 'success');
-    }
-
-    function closeModal() {
-        document.getElementById('produkt-modal').classList.remove('open');
-    }
-
-    // ════════════════════════════════════════════════════════
+    // ══════════════════════════════════════════════════════
     //  WARENKORB
-    // ════════════════════════════════════════════════════════
-    function renderWarenkorb() {
-        const container = document.getElementById('cart-items');
-        const countEl   = document.getElementById('cart-count');
-        const totalEl   = document.getElementById('cart-total');
+    // ══════════════════════════════════════════════════════
+    function renderCart(){
+        const total=warenkorb.reduce((s,i)=>s+i.endpreis*i.menge,0);
+        const count=warenkorb.reduce((s,i)=>s+i.menge,0);
+        const cc=document.getElementById('cc');
+        cc.style.display=count>0?'flex':'none'; cc.textContent=count;
+        document.getElementById('ctot').textContent=eur(total);
 
-        const total = warenkorb.reduce((s, i) => s + i.gesamt_preis * i.menge, 0);
-        const count = warenkorb.reduce((s, i) => s + i.menge, 0);
-
-        countEl.style.display = count > 0 ? 'flex' : 'none';
-        countEl.textContent = count;
-        totalEl.textContent = formatEur(total);
-
-        if (!warenkorb.length) {
-            container.innerHTML = `<div class="empty-state" style="padding:32px 0"><div class="icon">🛒</div><p>Leer</p></div>`;
-            return;
-        }
-
-        container.innerHTML = warenkorb.map((item, idx) => `
-    <div class="cart-item">
-      <div class="cart-item-info" style="flex:1">
-        <div class="cart-item-name">${item.produkt_name}</div>
-        <div class="cart-item-sub">${item.farbe || ''}${item.groesse ? ' · ' + item.groesse : ''}</div>
-        <div class="cart-item-qty">
-          <button class="qty-btn" onclick="mengeAendern(${idx}, -1)">−</button>
-          <span>${item.menge}</span>
-          <button class="qty-btn" onclick="mengeAendern(${idx}, 1)">+</button>
-          <button class="qty-btn" style="margin-left:4px;color:var(--danger)" onclick="ausWarenkorb(${idx})">🗑</button>
+        const el=document.getElementById('citems');
+        if(!warenkorb.length){el.innerHTML='<div style="text-align:center;padding:24px;color:var(--mu)">🛒 Leer</div>';return;}
+        el.innerHTML=warenkorb.map((it,i)=>`
+    <div class="ci">
+      <div style="flex:1">
+        <div class="cn">${it.produktname}</div>
+        <div class="csub">${it.farbebezeichnung} · ${it.groesse_beschreibung}</div>
+        <div class="cqty">
+          <button class="qb" onclick="cq(${i},-1)">−</button>
+          <span>${it.menge}</span>
+          <button class="qb" onclick="cq(${i},1)">+</button>
+          <button class="qb" style="color:var(--er)" onclick="crem(${i})">🗑</button>
         </div>
       </div>
-      <div class="cart-item-price">${formatEur(item.gesamt_preis * item.menge)}</div>
-    </div>
-  `).join('');
+      <div style="font-size:13px;font-weight:600;color:var(--ac)">${eur(it.endpreis*it.menge)}</div>
+    </div>`).join('');
     }
+    function cq(i,d){warenkorb[i].menge+=d;if(warenkorb[i].menge<=0)warenkorb.splice(i,1);renderCart();}
+    function crem(i){warenkorb.splice(i,1);renderCart();}
+    function toggleCart(){document.getElementById('cpanel').classList.toggle('open');}
 
-    function mengeAendern(idx, delta) {
-        warenkorb[idx].menge += delta;
-        if (warenkorb[idx].menge <= 0) warenkorb.splice(idx, 1);
-        renderWarenkorb();
-    }
-
-    function ausWarenkorb(idx) {
-        warenkorb.splice(idx, 1);
-        renderWarenkorb();
-        aktualisiereBestellformular();
-    }
-
-    function toggleCart() {
-        document.getElementById('cart-panel').classList.toggle('open');
-    }
-
-    // ════════════════════════════════════════════════════════
-    //  KUNDE
-    // ════════════════════════════════════════════════════════
-    let sucheTimeout;
-    const DEMO_KUNDEN = [
-        { kunde_id:1, vorname:'Hans',  nachname:'Müller',  email:'h.mueller@mail.de', telefon:'030-1234', ort:'Berlin' },
-        { kunde_id:2, vorname:'Lisa',  nachname:'Wagner',  email:'l.wagner@mail.de',  telefon:'089-5678', ort:'München' },
-        { kunde_id:3, vorname:'Peter', nachname:'Klein',   email:'p.klein@mail.de',   telefon:'040-9012', ort:'Hamburg' },
-    ];
-
-    function sucheKunde(val) {
-        clearTimeout(sucheTimeout);
-        if (!val) { document.getElementById('kunde-ergebnisse').innerHTML = ''; return; }
-        sucheTimeout = setTimeout(async () => {
-            let kunden;
-            if (DEMO_MODE) {
-                kunden = DEMO_KUNDEN.filter(k =>
-                    k.nachname.toLowerCase().includes(val.toLowerCase()) ||
-                    k.vorname.toLowerCase().includes(val.toLowerCase())
-                );
-            } else {
-                kunden = await apiFetch('/kunden/suchen?name=' + encodeURIComponent(val)).catch(() => []);
-            }
-            const el = document.getElementById('kunde-ergebnisse');
-            el.innerHTML = kunden.length ? kunden.map(k => `
-      <div onclick="kundeWaehlen(${JSON.stringify(k).replace(/"/g,'&quot;')})"
-           style="padding:10px 12px;border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;margin-bottom:6px;font-size:14px;transition:all .15s"
-           onmouseover="this.style.background='var(--accent-light)'" onmouseout="this.style.background=''">
+    // ══════════════════════════════════════════════════════
+    //  BESTELLUNG - KUNDEN-SUCHE
+    // ══════════════════════════════════════════════════════
+    let kSuchTimer;
+    function sucheK(val){
+        clearTimeout(kSuchTimer);
+        if(!val){document.getElementById('kres').innerHTML='';return;}
+        kSuchTimer=setTimeout(async()=>{
+            let ks=DEMO?D_KUNDEN.filter(k=>k.nachname.toLowerCase().includes(val.toLowerCase())||k.vorname.toLowerCase().includes(val.toLowerCase())):await api('/kunden/suchen?name='+encodeURIComponent(val)).catch(()=>[]);
+            document.getElementById('kres').innerHTML=ks.length?ks.map(k=>`
+      <div class="kr-item" onclick='waehleK(${JSON.stringify(k).replace(/'/g,"&#39;")})'>
         <strong>${k.vorname} ${k.nachname}</strong>
-        <span style="color:var(--text-muted);font-size:12px;margin-left:8px">${k.email || ''} · ${k.ort || ''}</span>
-      </div>
-    `).join('') : '<p style="font-size:13px;color:var(--text-muted);padding:6px 0">Keine Kunden gefunden.</p>';
-        }, 300);
+        <span style="color:var(--mu);font-size:12px;margin-left:8px">${k.email||''} · ${k.ort||''}</span>
+      </div>`).join(''):'<p style="font-size:13px;color:var(--mu);padding:6px 0">Keine Kunden gefunden.</p>';
+        },280);
     }
 
-    function kundeWaehlen(kunde) {
-        if (typeof kunde === 'string') kunde = JSON.parse(kunde);
-        ausgewaehlterKunde = kunde;
-        document.getElementById('kunde-ergebnisse').innerHTML = '';
-        document.getElementById('kunde-suche').value = '';
-        document.getElementById('ausgewaehlter-kunde').style.display = 'block';
-        document.getElementById('kunde-anzeige').textContent =
-            `✓ ${kunde.vorname} ${kunde.nachname}  ·  ${kunde.email || ''}  ·  ${kunde.ort || ''}`;
+    function waehleK(k){
+        aktKunde=k;
+        document.getElementById('kres').innerHTML='';
+        document.getElementById('ks').value='';
+        document.getElementById('ksel').style.display='block';
+        document.getElementById('kselname').textContent=`✓ ${k.vorname} ${k.nachname}  ·  ${k.email||''}  ·  ${k.ort||''}`;
     }
 
-    function toggleNeuerKunde() {
-        const f = document.getElementById('neuer-kunde-form');
-        f.style.display = f.style.display === 'none' ? 'block' : 'none';
-    }
+    function toggleNK(){const f=document.getElementById('nkf');f.style.display=f.style.display==='none'?'block':'none';}
 
-    async function kundeAnlegen() {
-        const k = {
-            vorname: document.getElementById('nk-vorname').value,
-            nachname: document.getElementById('nk-nachname').value,
-            email:   document.getElementById('nk-email').value,
-            telefon: document.getElementById('nk-telefon').value,
-            strasse: document.getElementById('nk-strasse').value,
-            plz:     document.getElementById('nk-plz').value,
-            ort:     document.getElementById('nk-ort').value,
-        };
-
-        if (!k.vorname || !k.nachname) { toast('Vor- und Nachname erforderlich', 'info'); return; }
-
-        if (DEMO_MODE) {
-            const neueId = DEMO_KUNDEN.length + 1;
-            const neuer  = { ...k, kunde_id: neueId };
-            DEMO_KUNDEN.push(neuer);
-            kundeWaehlen(neuer);
-            document.getElementById('neuer-kunde-form').style.display = 'none';
-            toast('Kunde angelegt (Demo)', 'success');
-            return;
+    async function kundeAnlegen(){
+        const k={vorname:document.getElementById('nkv').value,nachname:document.getElementById('nkn').value,
+            email:document.getElementById('nke').value,telefonnummer:document.getElementById('nkt').value,
+            adresse:document.getElementById('nka').value,plz:document.getElementById('nkp').value,
+            ort:document.getElementById('nko').value,land:document.getElementById('nkl').value,
+            passwort:document.getElementById('nkpw').value||'temp123'};
+        if(!k.vorname||!k.nachname){toast('Vor- und Nachname erforderlich','inf');return;}
+        if(DEMO){
+            const nk={...k,kundeid:D_KUNDEN.length+1};
+            D_KUNDEN.push(nk); waehleK(nk);
+            document.getElementById('nkf').style.display='none';
+            toast('Kunde angelegt','ok'); return;
         }
-
         try {
-            const res = await apiFetch('/kunden', { method: 'POST', body: JSON.stringify(k) });
-            ausgewaehlterKunde = { ...k, kunde_id: res.kundeId };
-            kundeWaehlen(ausgewaehlterKunde);
-            document.getElementById('neuer-kunde-form').style.display = 'none';
-            toast(res.neu ? 'Neuer Kunde angelegt' : 'Bestehender Kunde gefunden', 'success');
-        } catch (e) {
-            toast('Fehler: ' + e.message, 'error');
-        }
+            const r=await api('/kunden',{method:'POST',body:JSON.stringify(k)});
+            waehleK({...k,kundeid:r.kundeId});
+            document.getElementById('nkf').style.display='none';
+            toast(r.neu?'Neuer Kunde angelegt':'Bestehender Kunde gefunden','ok');
+        } catch(e){toast('Fehler: '+e.message,'er');}
     }
 
-    // ════════════════════════════════════════════════════════
+    // ══════════════════════════════════════════════════════
     //  BESTELLUNG
-    // ════════════════════════════════════════════════════════
-    function aktualisiereBestellformular() {
-        const el = document.getElementById('order-cart-summary');
-        if (!warenkorb.length) {
-            el.innerHTML = `<div class="empty-state" style="padding:24px 0"><div class="icon">🛒</div><p>Noch keine Produkte gewählt.</p></div>`;
-            return;
+    // ══════════════════════════════════════════════════════
+    function renderOCart(){
+        const el=document.getElementById('ocart');
+        if(!warenkorb.length){el.innerHTML='<div style="text-align:center;padding:24px;color:var(--mu)">🛒 Noch keine Artikel im Warenkorb.</div>';return;}
+        const total=warenkorb.reduce((s,i)=>s+i.endpreis*i.menge,0);
+        el.innerHTML=`<table style="width:100%;border-collapse:collapse;font-size:13px">
+    <thead><tr style="border-bottom:1.5px solid var(--bd)">
+      <th style="text-align:left;padding:7px 10px;font-size:11px;text-transform:uppercase;color:var(--mu);font-weight:500">Artikel</th>
+      <th style="text-align:center;padding:7px 10px;font-size:11px;text-transform:uppercase;color:var(--mu);font-weight:500">Menge</th>
+      <th style="text-align:right;padding:7px 10px;font-size:11px;text-transform:uppercase;color:var(--mu);font-weight:500">Preis</th>
+      <th></th>
+    </tr></thead>
+    <tbody>
+      ${warenkorb.map((it,i)=>`<tr style="border-bottom:1px solid var(--bd)">
+        <td style="padding:10px 10px"><strong>${it.produktname}</strong><br>
+          <span style="font-size:11px;color:var(--mu)">${it.farbebezeichnung} · ${it.groesse_beschreibung}</span></td>
+        <td style="text-align:center;padding:10px">${it.menge}</td>
+        <td style="text-align:right;padding:10px;font-weight:500">${eur(it.endpreis*it.menge)}</td>
+        <td style="padding:10px;text-align:right"><button class="btn btn-g btn-s" onclick="crem(${i});renderOCart()" style="padding:4px 8px;font-size:12px">✕</button></td>
+      </tr>`).join('')}
+    </tbody>
+    <tfoot><tr>
+      <td colspan="2" style="padding:12px 10px;font-weight:600;font-size:14px">Gesamt</td>
+      <td style="padding:12px 10px;text-align:right;font-weight:700;font-size:18px;color:var(--ac)">${eur(total)}</td>
+      <td></td>
+    </tr></tfoot>
+  </table>`;
+    }
+
+    async function bestellungAufgeben(){
+        if(!aktKunde){toast('Bitte Kunden auswählen','inf');return;}
+        if(!warenkorb.length){toast('Warenkorb ist leer','inf');return;}
+        const zahlungsartId=parseInt(document.getElementById('zahlungsart').value);
+
+        if(DEMO){
+            const id=Math.floor(Math.random()*9000)+1000;
+            const total=warenkorb.reduce((s,i)=>s+i.endpreis*i.menge,0);
+            D_VERKAEUFE.unshift({verkaufid:id,kundeid:aktKunde.kundeid,
+                kunde:`${aktKunde.nachname}, ${aktKunde.vorname}`,
+                verkaufsdatum:new Date().toISOString().slice(0,10),
+                zahlungstatus:'Y',anzahl:warenkorb.length,gesamt:total});
+            warenkorb=[]; aktKunde=null;
+            renderCart();
+            document.getElementById('ksel').style.display='none';
+            toast(`Verkauf #${id} abgeschlossen!`,'ok');
+            gotoTab('verkaeufe'); return;
         }
-        const total = warenkorb.reduce((s, i) => s + i.gesamt_preis * i.menge, 0);
-        el.innerHTML = `
-    <table style="width:100%;border-collapse:collapse;font-size:14px">
-      <thead>
-        <tr style="border-bottom:1.5px solid var(--border)">
-          <th style="text-align:left;padding:6px 8px;font-size:12px;font-weight:500;color:var(--text-muted);text-transform:uppercase">Artikel</th>
-          <th style="text-align:center;padding:6px 8px;font-size:12px;font-weight:500;color:var(--text-muted);text-transform:uppercase">Menge</th>
-          <th style="text-align:right;padding:6px 8px;font-size:12px;font-weight:500;color:var(--text-muted);text-transform:uppercase">Preis</th>
-          <th></th>
-        </tr>
-      </thead>
+        try{
+            const r=await api('/verkauf',{method:'POST',body:JSON.stringify({
+                    kundeId:aktKunde.kundeid,zahlungsartId,
+                    positionen:warenkorb.map(i=>({varianteId:i.varianteid,menge:i.menge}))
+                })});
+            warenkorb=[]; aktKunde=null; renderCart();
+            document.getElementById('ksel').style.display='none';
+            toast(`Verkauf #${r.verkaufId} – Gesamt: ${eur(r.gesamtBetrag)}`,'ok');
+            gotoTab('verkaeufe');
+        } catch(e){toast('Fehler: '+e.message,'er');}
+    }
+
+    // ══════════════════════════════════════════════════════
+    //  VERKÄUFE
+    // ══════════════════════════════════════════════════════
+    async function ladeVerkaeufe(){
+        const vs=DEMO?D_VERKAEUFE:await api('/verkauf').catch(()=>[]);
+        document.getElementById('vtbl').innerHTML=`
+    <table class="vtbl">
+      <thead><tr>
+        <th>Verkauf-Nr.</th><th>Kunde</th><th>Datum</th>
+        <th>Positionen</th><th>Gesamt</th><th>Zahlungsstatus</th><th></th>
+      </tr></thead>
       <tbody>
-        ${warenkorb.map((item, idx) => `
-          <tr style="border-bottom:1px solid var(--border)">
-            <td style="padding:10px 8px">
-              <strong>${item.produkt_name}</strong><br>
-              <span style="font-size:12px;color:var(--text-muted)">${item.farbe || ''} ${item.groesse ? '· ' + item.groesse : ''}</span>
-            </td>
-            <td style="text-align:center;padding:10px 8px">${item.menge}</td>
-            <td style="text-align:right;padding:10px 8px;font-weight:500">${formatEur(item.gesamt_preis * item.menge)}</td>
-            <td style="padding:10px 8px;text-align:right">
-              <button class="btn btn-ghost btn-sm" onclick="ausWarenkorb(${idx})" style="padding:4px 8px;font-size:12px">✕</button>
-            </td>
-          </tr>
-        `).join('')}
+        ${vs.map(v=>`<tr>
+          <td style="font-family:monospace">#${v.verkaufid||v.verkaufId}</td>
+          <td>${v.kunde||'–'}</td>
+          <td style="color:var(--mu);font-size:12px">${v.verkaufsdatum||v.verkaufsDatum||''}</td>
+          <td>${v.anzahl||'–'}</td>
+          <td style="font-weight:500">${eur(v.gesamt||0)}</td>
+          <td><span class="stbadge ST-${v.zahlungstatus||v.zahlungStatus}">
+            ${(v.zahlungstatus||v.zahlungStatus)==='Y'?'Bezahlt':'Storniert'}
+          </span></td>
+          <td>${(v.zahlungstatus||v.zahlungStatus)==='Y'?`<button class="btn btn-er btn-s" onclick="stornieren(${v.verkaufid||v.verkaufId})">Stornieren</button>`:''}
+          </td>
+        </tr>`).join('')}
       </tbody>
-      <tfoot>
-        <tr>
-          <td colspan="2" style="padding:12px 8px;font-weight:600;font-size:15px">Gesamt</td>
-          <td style="padding:12px 8px;text-align:right;font-weight:700;font-size:18px;color:var(--accent)">${formatEur(total)}</td>
-          <td></td>
-        </tr>
-      </tfoot>
-    </table>
-  `;
+    </table>`;
     }
 
-    async function bestellungAufgeben() {
-        if (!ausgewaehlterKunde) { toast('Bitte zuerst einen Kunden auswählen', 'info'); return; }
-        if (!warenkorb.length)   { toast('Warenkorb ist leer', 'info'); return; }
-
-        const anfrage = {
-            kundeId:      ausgewaehlterKunde.kunde_id,
-            lagerId:      CURRENT_USER?.lagerId || 1,
-            lieferadresse: document.getElementById('lieferadresse').value,
-            notizen:       document.getElementById('notizen').value,
-            positionen:    warenkorb.map(i => ({ varianteId: i.variante_id, menge: i.menge })),
-        };
-
-        if (DEMO_MODE) {
-            const id = Math.floor(Math.random() * 9000) + 1000;
-            const total = warenkorb.reduce((s, i) => s + i.gesamt_preis * i.menge, 0);
-            DEMO_BESTELLUNGEN.unshift({
-                bestellung_id: id,
-                kunde: `${ausgewaehlterKunde.nachname}, ${ausgewaehlterKunde.vorname}`,
-                erstellt_am: new Date().toLocaleString('de-DE'),
-                status: 'BESTAETIGT',
-                gesamt_betrag: total,
-                positionen: warenkorb.length,
-            });
-            warenkorb = [];
-            ausgewaehlterKunde = null;
-            renderWarenkorb();
-            document.getElementById('ausgewaehlter-kunde').style.display = 'none';
-            toast(`Bestellung ${id} erfolgreich aufgegeben! Gesamt: ${formatEur(total)}`, 'success');
-            showTab('bestellungen');
-            return;
+    async function stornieren(id){
+        if(!confirm(`Verkauf #${id} wirklich stornieren?`)) return;
+        if(DEMO){
+            const v=D_VERKAEUFE.find(x=>x.verkaufid==id); if(v) v.zahlungstatus='N';
+            ladeVerkaeufe(); toast(`Verkauf #${id} storniert`,'ok'); return;
         }
-
-        try {
-            const res = await apiFetch('/bestellungen', { method: 'POST', body: JSON.stringify(anfrage) });
-            warenkorb = [];
-            ausgewaehlterKunde = null;
-            renderWarenkorb();
-            toast(`Bestellung ${res.bestellungId} erstellt. Gesamt: ${formatEur(res.gesamtBetrag)}`, 'success');
-            showTab('bestellungen');
-        } catch (e) {
-            toast('Fehler: ' + e.message, 'error');
-        }
+        try{
+            await api(`/verkauf/${id}/stornieren`,{method:'PUT'});
+            toast(`Verkauf #${id} storniert`,'ok'); ladeVerkaeufe();
+        } catch(e){toast('Fehler: '+e.message,'er');}
     }
 
-    // ════════════════════════════════════════════════════════
-    //  BESTELLUNGEN
-    // ════════════════════════════════════════════════════════
-    async function ladeBestellungen() {
-        const el = document.getElementById('bestellungen-inhalt');
-
-        let bestellungen;
-        if (DEMO_MODE) {
-            bestellungen = DEMO_BESTELLUNGEN;
-        } else {
-            bestellungen = await apiFetch('/bestellungen/alle').catch(() => []);
-        }
-
-        el.innerHTML = `
-    <div style="background:var(--surface2);border-radius:var(--radius-lg);border:1px solid var(--border);overflow:hidden">
-      <table class="order-table">
-        <thead>
-          <tr>
-            <th>Nr.</th>
-            <th>Kunde</th>
-            <th>Datum</th>
-            <th>Positionen</th>
-            <th>Betrag</th>
-            <th>Status</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          ${bestellungen.map(b => `
-            <tr>
-              <td style="font-family:monospace">#${b.bestellung_id}</td>
-              <td>${b.kunde || '—'}</td>
-              <td style="color:var(--text-muted);font-size:13px">${b.erstellt_am || ''}</td>
-              <td>${b.positionen || '—'}</td>
-              <td style="font-weight:500">${formatEur(b.gesamt_betrag)}</td>
-              <td><span class="status-badge status-${b.status}">${b.status}</span></td>
-              <td>
-                ${b.status !== 'STORNIERT' && b.status !== 'GELIEFERT' ? `
-                  <button class="btn btn-danger btn-sm" onclick="bestellungStornieren(${b.bestellung_id})">Stornieren</button>
-                ` : ''}
-              </td>
-            </tr>
-          `).join('')}
-        </tbody>
-      </table>
-    </div>
-  `;
-    }
-
-    async function bestellungStornieren(id) {
-        if (!confirm(`Bestellung #${id} wirklich stornieren?`)) return;
-
-        if (DEMO_MODE) {
-            const b = DEMO_BESTELLUNGEN.find(x => x.bestellung_id == id);
-            if (b) b.status = 'STORNIERT';
-            ladeBestellungen();
-            toast(`Bestellung #${id} storniert`, 'success');
-            return;
-        }
-
-        try {
-            await apiFetch(`/bestellungen/${id}/stornieren?lagerId=1`, { method: 'PUT' });
-            toast(`Bestellung #${id} storniert`, 'success');
-            ladeBestellungen();
-        } catch (e) {
-            toast('Fehler: ' + e.message, 'error');
-        }
-    }
-
-    // ════════════════════════════════════════════════════════
+    // ══════════════════════════════════════════════════════
     //  UTILS
-    // ════════════════════════════════════════════════════════
-    function formatEur(v) {
-        return new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(v);
-    }
+    // ══════════════════════════════════════════════════════
+    const eur=v=>new Intl.NumberFormat('de-DE',{style:'currency',currency:'EUR'}).format(v||0);
 
-    function toast(msg, type = 'info') {
-        const el = document.createElement('div');
-        el.className = `toast toast-${type}`;
-        el.textContent = msg;
-        document.getElementById('toast-container').appendChild(el);
-        setTimeout(() => el.remove(), 4000);
+    function toast(msg,type='inf'){
+        const el=document.createElement('div');
+        el.className=`toast t-${type}`; el.textContent=msg;
+        document.getElementById('tc').appendChild(el);
+        setTimeout(()=>el.remove(),4000);
     }
 </script>
 </body>

@@ -16,18 +16,18 @@ import lombok.*;
 public class Bestellung {
 
   @Id
-  @Column(name = "BESTELLUNG_ID")
+  @Column(name = "BESTELLUNGID")
   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_bst")
   @SequenceGenerator(name = "seq_bst", sequenceName = "SEQ_BESTELLUNG", allocationSize = 1)
   private Long bestellungId;
 
-  @Column(name = "KUNDE_ID", nullable = false)
+  @Column(name = "KUNDEID", nullable = false)
   private Long kundeId;
 
-  @Column(name = "ANGESTELLTER_ID", nullable = false)
+  @Column(name = "ANGESTELLTERID", nullable = false)
   private Long angestellterId;
 
-  @Column(name = "FILIALE_ID", nullable = false)
+  @Column(name = "FILIALEID", nullable = false)
   private Long filialeId;
 
   @Column(name = "ERSTELLT_AM")

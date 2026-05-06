@@ -1,83 +1,37 @@
 package model;
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.List;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import java.util.Collection;
+import java.util.List;
 
 @Entity
 @Table(name = "ANGESTELLTER")
-@Getter
-@Setter
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
+@Getter @Setter @Builder @NoArgsConstructor @AllArgsConstructor
 public class Angestellter implements UserDetails {
 
-  @Id
-  @Column(name = "ANGESTELLTER_ID")
-  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_ang")
-  @SequenceGenerator(name = "seq_ang", sequenceName = "SEQ_ANGESTELLTER", allocationSize = 1)
+  @Id @Column(name = "ANGESTELLTERID")
   private Long angestellterId;
 
-  @Column(name = "FILIALE_ID", nullable = false)
-  private Long filialeId;
+  @Column(name = "FILIALEID")   private Long filialeId;
+  @Column(name = "LAGERID")     private Long lagerId;
+  @Column(name = "ANG_ANGESTELLTERID") private Long vorgesetzterAngestellterId;
+  @Column(name = "VORNAME")     private String vorname;
+  @Column(name = "NACHNAME")    private String nachname;
+  @Column(name = "ROLLE")       private String rolle;
+  @Column(name = "EMAIL")       private String email;
+  @Column(name = "TELEFON")     private String telefon;
+  @Column(name = "PASSWORT")    private String passwort;
 
-  @Column(name = "VORNAME", nullable = false)
-  private String vorname;
-
-  @Column(name = "NACHNAME", nullable = false)
-  private String nachname;
-
-  @Column(name = "EMAIL", nullable = false, unique = true)
-  private String email;
-
-  @Column(name = "PASSWORT", nullable = false)
-  private String passwort;
-
-  @Column(name = "ROLLE", nullable = false)
-  private String rolle;
-
-  @Column(name = "AKTIV")
-  private boolean aktiv = true;
-
-  @Column(name = "ERSTELLT_AM")
-  private LocalDateTime erstelltAm;
-
-  // --- UserDetails ---
-  @Override
-  public String getUsername() {
-    return email;
-  }
-
-  @Override
-  public String getPassword() {
-    return passwort;
-  }
-
-  @Override
-  public boolean isEnabled() {
-    return aktiv;
-  }
-
-  @Override
-  public boolean isAccountNonExpired() {
-    return true;
-  }
-
-  @Override
-  public boolean isAccountNonLocked() {
-    return true;
-  }
-
-  @Override
-  public boolean isCredentialsNonExpired() {
-    return true;
-  }
+  @Override public String getUsername()  { return email; }
+  @Override public String getPassword()  { return passwort; }
+  @Override public boolean isEnabled()   { return true; }
+  @Override public boolean isAccountNonExpired()    { return true; }
+  @Override public boolean isAccountNonLocked()     { return true; }
+  @Override public boolean isCredentialsNonExpired(){ return true; }
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {

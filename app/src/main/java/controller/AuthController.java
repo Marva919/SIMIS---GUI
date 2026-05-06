@@ -1,10 +1,13 @@
 package controller;
 
-import jakarta.validation.Valid;
-import lombok.*;
-import org.springframework.http.*;
-import org.springframework.web.bind.annotation.*;
 import service.AngestellterService;
+import model.Angestellter;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.*;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -14,14 +17,25 @@ public class AuthController {
   private final AngestellterService service;
 
   @PostMapping("/login")
-  public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest req) {
+  public ResponseEntity<?> login(@Valid @RequestBody LoginRequest req) {
     String token = service.login(req.email(), req.passwort());
-    return ResponseEntity.ok(new LoginResponse(token));
+    return ResponseEntity.ok(Map.of("token", token));
+  }
+
+  @GetMapping("/me")
+  public ResponseEntity<?> me(@AuthenticationPrincipal Angestellter a) {
+    return ResponseEntity.ok(Map.of(
+            "angestellterId", a.getAngestellterId(),
+            "vorname",        a.getVorname(),
+            "nachname",       a.getNachname(),
+            "rolle",          a.getRolle(),
+            "filialeId",      a.getFilialeId(),
+            "lagerId",        a.getLagerId()
+    ));
   }
 
   public record LoginRequest(
-      @jakarta.validation.constraints.NotBlank String email,
-      @jakarta.validation.constraints.NotBlank String passwort) {}
-
-  public record LoginResponse(String token) {}
+          @jakarta.validation.constraints.NotBlank String email,
+          @jakarta.validation.constraints.NotBlank String passwort
+  ) {}
 }

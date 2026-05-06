@@ -1,31 +1,29 @@
 package service;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import repository.ProduktkategorieRepository;
 import lombok.RequiredArgsConstructor;
-import model.Produkt;
 import org.springframework.stereotype.Service;
-import repository.ProduktRepository;
+
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 public class ProduktService {
 
-  private final ProduktRepository repo;
-  private final StoredProcedureService spService;
+  private final StoredProcedureService     spService;
+  private final ProduktkategorieRepository katRepo;
 
-  public List<Map<String, Object>> suchen(
-      String suchbegriff, String kategorie, Double minPreis, Double maxPreis, Long lagerId) {
-    // Über Stored Procedure mit Lagerbestand
-    return spService.produkteSuchen(suchbegriff, kategorie, minPreis, maxPreis, lagerId);
+  public List<Map<String, Object>> suchen(String suchbegriff, Long kategorieId,
+                                          Double minPreis, Double maxPreis, Long lagerId) {
+    return spService.produkteSuchen(suchbegriff, kategorieId, minPreis, maxPreis, lagerId);
   }
 
-  public List<String> alleKategorien() {
-    return repo.findAlleKategorien();
-  }
-
-  public Optional<Produkt> findById(Long id) {
-    return repo.findById(id);
+  public List<Map<String, Object>> alleKategorien() {
+    return katRepo.findAll().stream()
+            .map(k -> Map.<String, Object>of(
+                    "kategorieId",   k.getKategorieId(),
+                    "kategorieName", k.getKategorieName()
+            ))
+            .toList();
   }
 }

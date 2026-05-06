@@ -1,14 +1,13 @@
 package controller;
 
-import java.util.List;
-import java.util.Map;
-import lombok.RequiredArgsConstructor;
 import model.Kunde;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import service.KundeService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.*;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import service.KundeService;
+
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/kunden")
@@ -20,7 +19,7 @@ public class KundeController {
 
   @GetMapping
   public ResponseEntity<List<Kunde>> alle() {
-    return ResponseEntity.ok(service.alleKunden());
+    return ResponseEntity.ok(service.alle());
   }
 
   @GetMapping("/suchen")
@@ -30,20 +29,14 @@ public class KundeController {
 
   @GetMapping("/{id}")
   public ResponseEntity<?> findById(@PathVariable Long id) {
-    return service.findById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    return service.findById(id).map(ResponseEntity::ok)
+            .orElse(ResponseEntity.notFound().build());
   }
 
-  /**
-   * Neuen Kunden anlegen oder bestehenden zurückgeben. Ruft intern SP_KUNDE_ANLEGEN_ODER_FINDEN
-   * auf.
-   */
   @PostMapping
   public ResponseEntity<?> anlegen(@RequestBody Kunde kunde) {
-    var ergebnis = service.anlegenOderFinden(kunde);
-    return ResponseEntity.status(ergebnis.neuAngelegt() ? HttpStatus.CREATED : HttpStatus.OK)
-        .body(
-            Map.of(
-                "kundeId", ergebnis.kundeId(),
-                "neu", ergebnis.neuAngelegt()));
+    var r = service.anlegenOderFinden(kunde);
+    return ResponseEntity.status(r.neuAngelegt() ? HttpStatus.CREATED : HttpStatus.OK)
+            .body(Map.of("kundeId", r.kundeId(), "neu", r.neuAngelegt()));
   }
 }
