@@ -1,9 +1,3 @@
-/*==============================================================*/
-/* DBMS name:      ORACLE Version 19c                           */
-/* Created on:     05.02.2026 15:58:39                          */
-/*==============================================================*/
-
-
 alter table ANGESTELLTER
    drop constraint FK_ANGESTEL_ANGESTELL_ANGESTEL;
 
@@ -236,6 +230,7 @@ create table ANGESTELLTER (
    NACHNAME             VARCHAR2(50)          not null,
    ROLLE                VARCHAR2(50)          not null,
    EMAIL                VARCHAR2(50)          not null,
+   PASSWORT             VARCHAR2(20)          default 'admin123' not null,
    TELEFON              VARCHAR2(50),
    constraint PK_ANGESTELLTER primary key (ANGESTELLTERID)
 );
@@ -409,16 +404,13 @@ create table GROESSE (
 /*==============================================================*/
 create table KUNDE (
    KUNDEID              NUMBER(20,0)          not null,
-   VORNAME_             VARCHAR2(50)          not null,
+   VORNAME             VARCHAR2(50)          not null,
    NACHNAME             VARCHAR2(50)          not null,
    EMAIL                VARCHAR2(50)          not null,
    ADRESSE              VARCHAR2(100)         not null,
    PLZ                  VARCHAR2(20)          not null,
    ORT                  VARCHAR2(50)          not null,
    LAND                 VARCHAR2(50)          not null,
-   REGESTRIERT          CHAR(1)              default 'N'  not null
-      constraint CKC_REGESTRIERT_KUNDE check (REGESTRIERT in ('Y','N')),
-   PASSWORT             VARCHAR2(20)          not null,
    TELEFONNUMMER        VARCHAR2(20),
    constraint PK_KUNDE primary key (KUNDEID)
 );
@@ -916,4 +908,3 @@ alter table VERKAUFPOSITION
 alter table VERKAUFPOSITION
    add constraint FK_VERKAUFP_VERKAUFPO_VERKAUF foreign key (VERKAUFID)
       references VERKAUF (VERKAUFID);
-

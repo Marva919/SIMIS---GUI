@@ -1,12 +1,3 @@
--- ============================================================
---  Stored Procedures  |  angepasst an das echte DB-Schema
--- ============================================================
-
--- ---------------------------------------------------------------
--- 1. SP_BESTAND_PRUEFEN
---    Prüft ob genug Bestand für eine Variante im Lager vorhanden.
---    Tabelle: BESTAND (BESTANDID, VARIANTEID, LAGERID, MENGE_VERFUEGBAR)
--- ---------------------------------------------------------------
 CREATE OR REPLACE PROCEDURE SP_BESTAND_PRUEFEN (
     p_varianteid   IN  NUMBER,
     p_lagerid      IN  NUMBER,
@@ -32,10 +23,6 @@ EXCEPTION
 END SP_BESTAND_PRUEFEN;
 /
 
--- ---------------------------------------------------------------
--- 2. SP_BESTAND_AKTUALISIEREN
---    Bucht Menge auf BESTAND (positiv = Eingang, negativ = Ausgang).
--- ---------------------------------------------------------------
 CREATE OR REPLACE PROCEDURE SP_BESTAND_AKTUALISIEREN (
     p_varianteid IN  NUMBER,
     p_lagerid    IN  NUMBER,
@@ -77,12 +64,6 @@ EXCEPTION
 END SP_BESTAND_AKTUALISIEREN;
 /
 
--- ---------------------------------------------------------------
--- 3. SP_VERKAUF_ERSTELLEN
---    Legt Kundenverkauf an (VERKAUF + VERKAUFPOSITIONen),
---    bucht BESTAND aus und schreibt LAGERBEWEGUNG.
---    p_positionen: CSV "varianteid:menge,varianteid:menge,..."
--- ---------------------------------------------------------------
 CREATE OR REPLACE PROCEDURE SP_VERKAUF_ERSTELLEN (
     p_kundeid        IN  NUMBER,
     p_filialeid      IN  NUMBER,
@@ -138,7 +119,6 @@ BEGIN
                                         || ' (verfügbar: ' || v_aktuell || ', benötigt: ' || v_menge || ')');
         END IF;
 
-        -- Preis mit optionalem Rabatt ermitteln
         SELECT ROUND(pv.PREISVARIANTE * (1 - NVL(
                                                      CASE WHEN SYSDATE BETWEEN r.START_DATUM AND NVL(r.END_DATUM, SYSDATE)
                                                               THEN r.RABATT_PROZENT ELSE 0 END, 0) / 100), 2)
@@ -156,7 +136,6 @@ BEGIN
 
         v_gesamt := v_gesamt + (v_menge * v_preis);
 
-        -- Bestand ausbuchen
         SP_BESTAND_AKTUALISIEREN(v_varianteid, p_lagerid, -v_menge, v_neu);
 
         -- Lagerbewegung: K = Kauf (Ausgang)
@@ -171,7 +150,6 @@ BEGIN
 
     END LOOP;
 
-    -- Anzahl Positionen eintragen, Zahlung bestätigen
     UPDATE VERKAUF
     SET    ANZAHL        = (SELECT COUNT(*) FROM VERKAUFPOSITION WHERE VERKAUFID = v_verkaufid),
            ZAHLUNGSTATUS = 'Y'
@@ -186,10 +164,6 @@ EXCEPTION
 END SP_VERKAUF_ERSTELLEN;
 /
 
--- ---------------------------------------------------------------
--- 4. SP_VERKAUF_STORNIEREN
---    Storniert Verkauf (ZAHLUNGSTATUS → 'N') und bucht Bestand zurück.
--- ---------------------------------------------------------------
 CREATE OR REPLACE PROCEDURE SP_VERKAUF_STORNIEREN (
     p_verkaufid IN  NUMBER,
     p_lagerid   IN  NUMBER,
@@ -218,7 +192,6 @@ BEGIN
             FROM   BESTAND
             WHERE  VARIANTEID = pos.VARIANTEID AND LAGERID = p_lagerid;
 
-            -- I = Inventar-Rückkehr (Eingang)
             INSERT INTO LAGERBEWEGUNG
             (BEWEGUNGSID, BESTANDID, BES_BESTANDID, DATUM, BEWEGUNGSTYP, MENGE)
             VALUES
@@ -235,10 +208,6 @@ EXCEPTION
 END SP_VERKAUF_STORNIEREN;
 /
 
--- ---------------------------------------------------------------
--- 5. SP_PRODUKT_SUCHEN
---    REF CURSOR mit Produkten + Varianten + Bestand.
--- ---------------------------------------------------------------
 CREATE OR REPLACE PROCEDURE SP_PRODUKT_SUCHEN (
     p_suchbegriff IN  VARCHAR2,
     p_kategorieid IN  NUMBER,
@@ -291,9 +260,6 @@ BEGIN
 END SP_PRODUKT_SUCHEN;
 /
 
--- ---------------------------------------------------------------
--- 6. SP_KUNDE_ANLEGEN_ODER_FINDEN
--- ---------------------------------------------------------------
 CREATE OR REPLACE PROCEDURE SP_KUNDE_ANLEGEN_ODER_FINDEN (
     p_vorname  IN  VARCHAR2,
     p_nachname IN  VARCHAR2,
@@ -303,7 +269,6 @@ CREATE OR REPLACE PROCEDURE SP_KUNDE_ANLEGEN_ODER_FINDEN (
     p_plz      IN  VARCHAR2,
     p_ort      IN  VARCHAR2,
     p_land     IN  VARCHAR2,
-    p_passwort IN  VARCHAR2,
     p_kundeid  OUT NUMBER,
     p_neu      OUT NUMBER
 ) AS
@@ -316,13 +281,12 @@ EXCEPTION
     WHEN NO_DATA_FOUND THEN
         SELECT SEQ_KUNDE.NEXTVAL INTO v_id FROM DUAL;
         INSERT INTO KUNDE (
-            KUNDEID, VORNAME_, NACHNAME, EMAIL, ADRESSE,
-            PLZ, ORT, LAND, REGESTRIERT, PASSWORT, TELEFONNUMMER
+            KUNDEID, VORNAME, NACHNAME, EMAIL, ADRESSE,
+            PLZ, ORT, LAND, TELEFONNUMMER
         ) VALUES (
                      v_id, p_vorname, p_nachname, p_email,
                      NVL(p_adresse,'-'), NVL(p_plz,'00000'),
-                     NVL(p_ort,'-'), NVL(p_land,'Deutschland'),
-                     'Y', NVL(p_passwort,'temp123'), p_telefon
+                     NVL(p_ort,'-'), NVL(p_land,'Deutschland'), p_telefon
                  );
         COMMIT;
         p_kundeid := v_id;

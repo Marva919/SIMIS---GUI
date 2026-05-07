@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Möbelhaus — Mitarbeiterportal</title>
+    <title>SIMIS — Mitarbeiterportal</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
         :root{--bg:#f5f1eb;--sf:#faf8f5;--s2:#fff;--bd:#e0d9cf;--tx:#1a1612;--mu:#7a6e62;--ac:#8b5e3c;--al:#f0e6da;--ah:#6e4a2e;--ok:#2d6a4f;--okl:#d8f3dc;--er:#9b2226;--erl:#fde2e4;--wn:#7f4f24;--wnl:#fff3e4;--r:10px;--rl:16px}
@@ -115,11 +115,10 @@
 <!-- LOGIN -->
 <div id="login">
     <div class="card">
-        <div class="logo"><h1>🪑 Möbelhaus</h1><p>Mitarbeiterportal · Intern</p></div>
-        <div class="fg"><label>E-Mail</label><input type="email" id="le" value="max.mustermann@moebelhaus.de"></div>
+        <div class="logo"><h1>🪑 SIMIS</h1><p>Mitarbeiterportal · Intern</p></div>
+        <div class="fg"><label>E-Mail</label><input type="email" id="le" value="philipp.bauer001@simis-design.eu"></div>
         <div class="fg"><label>Passwort</label><input type="password" id="lp" value="admin123"></div>
         <button class="btn btn-p" onclick="doLogin()">Anmelden</button>
-        <p style="text-align:center;font-size:11px;color:var(--mu);margin-top:12px">Demo: max.mustermann@moebelhaus.de / admin123</p>
         <div class="err" id="lerr"></div>
     </div>
 </div>
@@ -127,7 +126,7 @@
 <!-- APP -->
 <div id="app">
     <div class="topbar">
-        <span class="brand">🪑 Möbelhaus</span>
+        <span class="brand">🪑 SIMIS</span>
         <div class="ubadge">
             <div class="uav" id="uav">M</div>
             <span id="uname">Mitarbeiter</span>
@@ -145,10 +144,10 @@
     <div id="t-produkte" class="content">
         <div class="sh"><div><h2 class="st">Produktkatalog</h2><p class="ss" id="pcount"></p></div></div>
         <div class="fbar">
-            <div class="fg" style="flex:1;min-width:180px"><label>Suche</label><input type="text" id="fs" placeholder="Name…" oninput="filterP()"></div>
-            <div class="fg"><label>Kategorie</label><select id="fk" onchange="filterP()"><option value="">Alle</option></select></div>
-            <div class="fg"><label>Min. Preis €</label><input type="number" id="fmin" placeholder="0" oninput="filterP()" style="width:100px"></div>
-            <div class="fg"><label>Max. Preis €</label><input type="number" id="fmax" placeholder="9999" oninput="filterP()" style="width:100px"></div>
+            <div class="fg" style="flex:1;min-width:180px"><label>Suche</label><label for="fs"></label><input type="text" id="fs" placeholder="Name…" oninput="filterP()"></div>
+            <div class="fg"><label>Kategorie</label><label for="fk"></label><select id="fk" onchange="filterP()"><option value="">Alle</option></select></div>
+            <div class="fg"><label>Min. Preis €</label><label for="fmin"></label><input type="number" id="fmin" placeholder="0" oninput="filterP()" style="width:100px"></div>
+            <div class="fg"><label>Max. Preis €</label><label for="fmax"></label><input type="number" id="fmax" placeholder="9999" oninput="filterP()" style="width:100px"></div>
         </div>
         <div id="pgrid" class="pgrid"></div>
     </div>
@@ -159,22 +158,21 @@
         <div class="oform">
             <h3 style="font-size:15px;font-weight:500;margin-bottom:12px;font-family:'DM Sans',sans-serif">1. Kunde</h3>
             <div class="ksearch">
-                <div class="fg" style="flex:1;margin:0"><input type="text" id="ks" placeholder="Nachname suchen…" oninput="sucheK(this.value)"></div>
+                <div class="fg" style="flex:1;margin:0"><label for="ks"></label><input type="text" id="ks" placeholder="Nachname suchen…" oninput="sucheK(this.value)"></div>
                 <button class="btn btn-o btn-s" onclick="toggleNK()">+ Neuer Kunde</button>
             </div>
             <div id="kres"></div>
             <div class="nkf" id="nkf">
                 <p style="font-size:12px;font-weight:500;margin-bottom:10px;color:var(--mu)">Neuen Kunden anlegen</p>
                 <div class="nkgrid">
-                    <div class="fg"><label>Vorname</label><input id="nkv" type="text"></div>
-                    <div class="fg"><label>Nachname</label><input id="nkn" type="text"></div>
-                    <div class="fg"><label>E-Mail</label><input id="nke" type="email"></div>
-                    <div class="fg"><label>Telefon</label><input id="nkt" type="text"></div>
-                    <div class="fg wide"><label>Adresse</label><input id="nka" type="text"></div>
-                    <div class="fg"><label>PLZ</label><input id="nkp" type="text"></div>
-                    <div class="fg"><label>Ort</label><input id="nko" type="text"></div>
-                    <div class="fg"><label>Land</label><input id="nkl" type="text" value="Deutschland"></div>
-                    <div class="fg"><label>Passwort (Kundenportal)</label><input id="nkpw" type="text" placeholder="temp123"></div>
+                    <div class="fg"><label>Vorname</label><label for="nkv"></label><input id="nkv" type="text"></div>
+                    <div class="fg"><label>Nachname</label><label for="nkn"></label><input id="nkn" type="text"></div>
+                    <div class="fg"><label>E-Mail</label><label for="nke"></label><input id="nke" type="email"></div>
+                    <div class="fg"><label>Telefon</label><label for="nkt"></label><input id="nkt" type="text"></div>
+                    <div class="fg wide"><label>Adresse</label><label for="nka"></label><input id="nka" type="text"></div>
+                    <div class="fg"><label>PLZ</label><label for="nkp"></label><input id="nkp" type="text"></div>
+                    <div class="fg"><label>Ort</label><label for="nko"></label><input id="nko" type="text"></div>
+                    <div class="fg"><label>Land</label><label for="nkl"></label><input id="nkl" type="text" value="Deutschland"></div>
                 </div>
                 <button class="btn btn-p" style="margin-top:12px;width:auto;padding:9px 18px" onclick="kundeAnlegen()">Kunden anlegen</button>
             </div>
@@ -241,60 +239,9 @@
     // ══════════════════════════════════════════════════════
     //  Config
     // ══════════════════════════════════════════════════════
-    const API  = 'http://localhost:8080/api';
-    const DEMO = true;   // false → echtes Backend
+    const API  = '/api';
     let TOKEN = localStorage.getItem('token');
     let USER  = JSON.parse(localStorage.getItem('user') || 'null');
-
-    // ══════════════════════════════════════════════════════
-    //  Demo-Daten (spiegeln das echte Schema wider)
-    // ══════════════════════════════════════════════════════
-    const D_KATEGORIEN = [
-        {kategorieId:1,kategorieName:'Schlafzimmer'},
-        {kategorieId:2,kategorieName:'Esszimmer'},
-        {kategorieId:3,kategorieName:'Wohnzimmer'},
-        {kategorieId:4,kategorieName:'Büro'},
-    ];
-
-    // Felder aus SP_PRODUKT_SUCHEN:
-    // produktid, produktname, beschreibung, basis_preis, kategoriename,
-    // rabatt_prozent, varianteid, preisvariante, endpreis,
-    // farbenid, farbebezeichnung, hexcode,
-    // material, groesseid, breite_cm, hoehe_cm, tiefe_cm, groesse_beschreibung, bestand
-    const D_PRODUKTE = [
-        {produktid:1,produktname:'Bett NORDIC',  beschreibung:'Skandinavisches Massivholzbett aus Eiche',kategoriename:'Schlafzimmer',rabatt_prozent:0, varianteid:1, preisvariante:899,  endpreis:899,  farbebezeichnung:'Natur',    hexcode:'C8A882',material:'Eiche massiv',  breite_cm:80, hoehe_cm:45,tiefe_cm:200,groesse_beschreibung:'80×200 cm',  bestand:15},
-        {produktid:1,produktname:'Bett NORDIC',  beschreibung:'Skandinavisches Massivholzbett aus Eiche',kategoriename:'Schlafzimmer',rabatt_prozent:0, varianteid:2, preisvariante:949,  endpreis:949,  farbebezeichnung:'Natur',    hexcode:'C8A882',material:'Eiche massiv',  breite_cm:90, hoehe_cm:45,tiefe_cm:200,groesse_beschreibung:'90×200 cm',  bestand:10},
-        {produktid:1,produktname:'Bett NORDIC',  beschreibung:'Skandinavisches Massivholzbett aus Eiche',kategoriename:'Schlafzimmer',rabatt_prozent:0, varianteid:3, preisvariante:1049, endpreis:1049, farbebezeichnung:'Natur',    hexcode:'C8A882',material:'Eiche massiv',  breite_cm:160,hoehe_cm:45,tiefe_cm:200,groesse_beschreibung:'160×200 cm', bestand:8},
-        {produktid:1,produktname:'Bett NORDIC',  beschreibung:'Skandinavisches Massivholzbett aus Eiche',kategoriename:'Schlafzimmer',rabatt_prozent:0, varianteid:4, preisvariante:1099, endpreis:1099, farbebezeichnung:'Natur',    hexcode:'C8A882',material:'Eiche massiv',  breite_cm:180,hoehe_cm:45,tiefe_cm:200,groesse_beschreibung:'180×200 cm', bestand:4},
-        {produktid:2,produktname:'Bett METRO',   beschreibung:'Polsterbett mit Stoffbezug inkl. Lattenrost',kategoriename:'Schlafzimmer',rabatt_prozent:0,varianteid:5, preisvariante:649,  endpreis:649,  farbebezeichnung:'Grau',     hexcode:'8C8C8C',material:'Baumwollstoff', breite_cm:140,hoehe_cm:45,tiefe_cm:200,groesse_beschreibung:'140×200 cm', bestand:12},
-        {produktid:2,produktname:'Bett METRO',   beschreibung:'Polsterbett mit Stoffbezug inkl. Lattenrost',kategoriename:'Schlafzimmer',rabatt_prozent:0,varianteid:6, preisvariante:729,  endpreis:729,  farbebezeichnung:'Grau',     hexcode:'8C8C8C',material:'Baumwollstoff', breite_cm:160,hoehe_cm:45,tiefe_cm:200,groesse_beschreibung:'160×200 cm', bestand:7},
-        {produktid:2,produktname:'Bett METRO',   beschreibung:'Polsterbett mit Stoffbezug inkl. Lattenrost',kategoriename:'Schlafzimmer',rabatt_prozent:0,varianteid:7, preisvariante:729,  endpreis:729,  farbebezeichnung:'Anthrazit', hexcode:'3D3D3D',material:'Baumwollstoff', breite_cm:160,hoehe_cm:45,tiefe_cm:200,groesse_beschreibung:'160×200 cm', bestand:6},
-        {produktid:3,produktname:'Esstisch OSLO',beschreibung:'Massivholztisch aus Eiche, ausziehbar',   kategoriename:'Esszimmer',   rabatt_prozent:10,varianteid:9, preisvariante:1299, endpreis:1169, farbebezeichnung:'Natur',    hexcode:'C8A882',material:'Eiche massiv',  breite_cm:120,hoehe_cm:75,tiefe_cm:80, groesse_beschreibung:'120×80 cm',  bestand:20},
-        {produktid:3,produktname:'Esstisch OSLO',beschreibung:'Massivholztisch aus Eiche, ausziehbar',   kategoriename:'Esszimmer',   rabatt_prozent:10,varianteid:10,preisvariante:1499, endpreis:1349, farbebezeichnung:'Natur',    hexcode:'C8A882',material:'Eiche massiv',  breite_cm:160,hoehe_cm:75,tiefe_cm:80, groesse_beschreibung:'160×80 cm',  bestand:14},
-        {produktid:3,produktname:'Esstisch OSLO',beschreibung:'Massivholztisch aus Eiche, ausziehbar',   kategoriename:'Esszimmer',   rabatt_prozent:10,varianteid:11,preisvariante:1499, endpreis:1349, farbebezeichnung:'Weiß',     hexcode:'FFFFFF',material:'MDF lackiert',  breite_cm:160,hoehe_cm:75,tiefe_cm:80, groesse_beschreibung:'160×80 cm',  bestand:9},
-        {produktid:4,produktname:'Stuhl SIGRID', beschreibung:'Stapelbarer Stuhl, Stahlgestell Stoffsitz', kategoriename:'Esszimmer', rabatt_prozent:0, varianteid:12,preisvariante:149,  endpreis:149,  farbebezeichnung:'Grau',     hexcode:'8C8C8C',material:'Stahl / Stoff', breite_cm:50, hoehe_cm:90,tiefe_cm:55, groesse_beschreibung:'Standard',   bestand:30},
-        {produktid:4,produktname:'Stuhl SIGRID', beschreibung:'Stapelbarer Stuhl, Stahlgestell Stoffsitz', kategoriename:'Esszimmer', rabatt_prozent:0, varianteid:13,preisvariante:149,  endpreis:149,  farbebezeichnung:'Schwarz',  hexcode:'000000',material:'Stahl / Stoff', breite_cm:50, hoehe_cm:90,tiefe_cm:55, groesse_beschreibung:'Standard',   bestand:25},
-        {produktid:4,produktname:'Stuhl SIGRID', beschreibung:'Stapelbarer Stuhl, Stahlgestell Stoffsitz', kategoriename:'Esszimmer', rabatt_prozent:0, varianteid:14,preisvariante:159,  endpreis:159,  farbebezeichnung:'Blau',     hexcode:'3A6EA5',material:'Stahl / Stoff', breite_cm:50, hoehe_cm:90,tiefe_cm:55, groesse_beschreibung:'Standard',   bestand:20},
-        {produktid:5,produktname:'Sofa COMFORT', beschreibung:'L-Sofa mit Schlaffunktion, 5 Sitzer',      kategoriename:'Wohnzimmer',  rabatt_prozent:0, varianteid:15,preisvariante:1799, endpreis:1799, farbebezeichnung:'Hellgrau', hexcode:'C0C0C0',material:'Baumwollstoff', breite_cm:280,hoehe_cm:85,tiefe_cm:160,groesse_beschreibung:'L-Form',    bestand:6},
-        {produktid:5,produktname:'Sofa COMFORT', beschreibung:'L-Sofa mit Schlaffunktion, 5 Sitzer',      kategoriename:'Wohnzimmer',  rabatt_prozent:0, varianteid:16,preisvariante:1899, endpreis:1899, farbebezeichnung:'Dunkelblau',hexcode:'1A2E5A',material:'Baumwollstoff', breite_cm:280,hoehe_cm:85,tiefe_cm:160,groesse_beschreibung:'L-Form',    bestand:4},
-        {produktid:6,produktname:'Regal CUBE',   beschreibung:'Würfelregal MDF weiß hochglanz, modular',  kategoriename:'Wohnzimmer',  rabatt_prozent:0, varianteid:17,preisvariante:249,  endpreis:249,  farbebezeichnung:'Weiß',     hexcode:'FFFFFF',material:'MDF lackiert',  breite_cm:40, hoehe_cm:160,tiefe_cm:30,groesse_beschreibung:'S (40cm)',   bestand:22},
-        {produktid:6,produktname:'Regal CUBE',   beschreibung:'Würfelregal MDF weiß hochglanz, modular',  kategoriename:'Wohnzimmer',  rabatt_prozent:0, varianteid:18,preisvariante:299,  endpreis:299,  farbebezeichnung:'Weiß',     hexcode:'FFFFFF',material:'MDF lackiert',  breite_cm:80, hoehe_cm:160,tiefe_cm:30,groesse_beschreibung:'M (80cm)',   bestand:18},
-        {produktid:7,produktname:'Schrank GRANDE',beschreibung:'Schwebetürschrank mit Spiegel, 3-türig',  kategoriename:'Schlafzimmer',rabatt_prozent:0, varianteid:19,preisvariante:1099, endpreis:1099, farbebezeichnung:'Weiß',     hexcode:'FFFFFF',material:'MDF lackiert',  breite_cm:200,hoehe_cm:220,tiefe_cm:62,groesse_beschreibung:'200×62 cm', bestand:8},
-        {produktid:7,produktname:'Schrank GRANDE',beschreibung:'Schwebetürschrank mit Spiegel, 3-türig',  kategoriename:'Schlafzimmer',rabatt_prozent:0, varianteid:20,preisvariante:1149, endpreis:1149, farbebezeichnung:'Anthrazit', hexcode:'3D3D3D',material:'MDF lackiert',  breite_cm:200,hoehe_cm:220,tiefe_cm:62,groesse_beschreibung:'200×62 cm', bestand:5},
-    ];
-
-    const D_KUNDEN = [
-        {kundeid:1,vorname:'Hans', nachname:'Müller', email:'h.mueller@mail.de', ort:'Berlin',  telefonnummer:'030-111222'},
-        {kundeid:2,vorname:'Lisa', nachname:'Wagner', email:'l.wagner@mail.de',  ort:'München', telefonnummer:'089-333444'},
-        {kundeid:3,vorname:'Peter',nachname:'Klein',  email:'p.klein@mail.de',   ort:'Hamburg', telefonnummer:'040-555666'},
-    ];
-
-    let D_VERKAEUFE = [
-        {verkaufid:1001,kundeid:1,kunde:'Müller, Hans', verkaufsdatum:'2024-11-14',zahlungstatus:'Y',anzahl:2,gesamt:1199},
-        {verkaufid:1002,kundeid:2,kunde:'Wagner, Lisa', verkaufsdatum:'2024-11-13',zahlungstatus:'Y',anzahl:3,gesamt:3598},
-        {verkaufid:1003,kundeid:3,kunde:'Klein, Peter', verkaufsdatum:'2024-11-12',zahlungstatus:'Y',anzahl:3,gesamt:447},
-        {verkaufid:1004,kundeid:1,kunde:'Müller, Hans', verkaufsdatum:'2024-11-11',zahlungstatus:'N',anzahl:1,gesamt:899},
-    ];
 
     // ══════════════════════════════════════════════════════
     //  State
@@ -315,6 +262,10 @@
                 ...(TOKEN ? {Authorization:'Bearer '+TOKEN} : {}),
                 ...(opts.headers||{})},
         });
+        if (res.status === 401 || res.status === 403) {
+            clearSession();
+            throw new Error('Bitte erneut anmelden');
+        }
         if (!res.ok) { const e=await res.json().catch(()=>({error:res.statusText})); throw new Error(e.error||'Fehler'); }
         return res.json();
     }
@@ -325,14 +276,6 @@
     async function doLogin() {
         const email=document.getElementById('le').value, pw=document.getElementById('lp').value;
         const err=document.getElementById('lerr'); err.style.display='none';
-        if (DEMO) {
-            if (email==='max.mustermann@moebelhaus.de' && pw==='admin123') {
-                USER={name:'Max Mustermann',rolle:'MANAGER',angestellterId:1,filialeId:1,lagerId:1};
-                TOKEN='demo'; localStorage.setItem('token',TOKEN); localStorage.setItem('user',JSON.stringify(USER));
-                showApp();
-            } else { err.textContent='Ungültige Anmeldedaten'; err.style.display='block'; }
-            return;
-        }
         try {
             const d=await api('/auth/login',{method:'POST',body:JSON.stringify({email,passwort:pw})});
             TOKEN=d.token; localStorage.setItem('token',TOKEN);
@@ -343,7 +286,8 @@
         } catch(e){err.textContent=e.message; err.style.display='block';}
     }
 
-    function doLogout(){TOKEN=null;USER=null;localStorage.clear();document.getElementById('app').style.display='none';document.getElementById('login').style.display='flex';}
+    function clearSession(){TOKEN=null;USER=null;localStorage.removeItem('token');localStorage.removeItem('user');}
+    function doLogout(){clearSession();document.getElementById('app').style.display='none';document.getElementById('login').style.display='flex';}
 
     function showApp(){
         document.getElementById('login').style.display='none';
@@ -353,7 +297,18 @@
         document.getElementById('uav').textContent=(USER?.name||'M')[0].toUpperCase();
         ladeProdukte();
     }
-    if(TOKEN&&USER) showApp();
+    async function initAuth(){
+        if(!TOKEN){return;}
+        try{
+            const me=await api('/auth/me');
+            USER={name:me.vorname+' '+me.nachname,rolle:me.rolle,angestellterId:me.angestellterId,filialeId:me.filialeId,lagerId:me.lagerId};
+            localStorage.setItem('user',JSON.stringify(USER));
+            showApp();
+        } catch(e){
+            doLogout();
+        }
+    }
+    initAuth();
 
     // ══════════════════════════════════════════════════════
     //  TABS
@@ -373,13 +328,13 @@
     //  PRODUKTE
     // ══════════════════════════════════════════════════════
     async function ladeProdukte(){
-        alleProdukte = DEMO ? D_PRODUKTE : await api('/produkte?lagerId='+(USER?.lagerId||1));
+        alleProdukte = await api('/produkte?lagerId='+(USER?.lagerId||1));
         renderProdukte(alleProdukte);
         ladeKategorien();
     }
 
     async function ladeKategorien(){
-        const kats = DEMO ? D_KATEGORIEN : await api('/produkte/kategorien');
+        const kats = await api('/produkte/kategorien');
         const sel=document.getElementById('fk');
         kats.forEach(k=>{
             const o=document.createElement('option');
@@ -401,7 +356,10 @@
         ));
     }
 
-    const KATICONS={Schlafzimmer:'🛏',Esszimmer:'🍽',Wohnzimmer:'🛋',Büro:'💼'};
+    const KATICONS={Sofas:'🛋️', Sessel:'🛋️', Esstische:'🍽️', Stuehle:'🪑', Couchtische:'🛋️', Sideboards:'🗄️', TVMoebel:'📺',
+    Betten:'🛌', Schraenke:'🗄', Nachttische:'🌙', Schreibtische:'', Leuchten: '💡', Teppiche:'🟫',
+    Dekoration:'🖼️', Regale:'🗄'};
+
 
     function renderProdukte(rows){
         document.getElementById('pcount').textContent=rows.length+' Einträge';
@@ -555,7 +513,10 @@
         clearTimeout(kSuchTimer);
         if(!val){document.getElementById('kres').innerHTML='';return;}
         kSuchTimer=setTimeout(async()=>{
-            let ks=DEMO?D_KUNDEN.filter(k=>k.nachname.toLowerCase().includes(val.toLowerCase())||k.vorname.toLowerCase().includes(val.toLowerCase())):await api('/kunden/suchen?name='+encodeURIComponent(val)).catch(()=>[]);
+            let ks=await api('/kunden/suchen?name='+encodeURIComponent(val)).catch(e=>{
+                toast('Fehler: '+e.message,'er');
+                return [];
+            });
             document.getElementById('kres').innerHTML=ks.length?ks.map(k=>`
       <div class="kr-item" onclick='waehleK(${JSON.stringify(k).replace(/'/g,"&#39;")})'>
         <strong>${k.vorname} ${k.nachname}</strong>
@@ -578,15 +539,8 @@
         const k={vorname:document.getElementById('nkv').value,nachname:document.getElementById('nkn').value,
             email:document.getElementById('nke').value,telefonnummer:document.getElementById('nkt').value,
             adresse:document.getElementById('nka').value,plz:document.getElementById('nkp').value,
-            ort:document.getElementById('nko').value,land:document.getElementById('nkl').value,
-            passwort:document.getElementById('nkpw').value||'temp123'};
+            ort:document.getElementById('nko').value,land:document.getElementById('nkl').value};
         if(!k.vorname||!k.nachname){toast('Vor- und Nachname erforderlich','inf');return;}
-        if(DEMO){
-            const nk={...k,kundeid:D_KUNDEN.length+1};
-            D_KUNDEN.push(nk); waehleK(nk);
-            document.getElementById('nkf').style.display='none';
-            toast('Kunde angelegt','ok'); return;
-        }
         try {
             const r=await api('/kunden',{method:'POST',body:JSON.stringify(k)});
             waehleK({...k,kundeid:r.kundeId});
@@ -630,23 +584,12 @@
         if(!aktKunde){toast('Bitte Kunden auswählen','inf');return;}
         if(!warenkorb.length){toast('Warenkorb ist leer','inf');return;}
         const zahlungsartId=parseInt(document.getElementById('zahlungsart').value);
+        const kundeId=aktKunde.kundeid||aktKunde.kundeId;
+        if(!kundeId){toast('Kunden-ID fehlt','er');return;}
 
-        if(DEMO){
-            const id=Math.floor(Math.random()*9000)+1000;
-            const total=warenkorb.reduce((s,i)=>s+i.endpreis*i.menge,0);
-            D_VERKAEUFE.unshift({verkaufid:id,kundeid:aktKunde.kundeid,
-                kunde:`${aktKunde.nachname}, ${aktKunde.vorname}`,
-                verkaufsdatum:new Date().toISOString().slice(0,10),
-                zahlungstatus:'Y',anzahl:warenkorb.length,gesamt:total});
-            warenkorb=[]; aktKunde=null;
-            renderCart();
-            document.getElementById('ksel').style.display='none';
-            toast(`Verkauf #${id} abgeschlossen!`,'ok');
-            gotoTab('verkaeufe'); return;
-        }
         try{
             const r=await api('/verkauf',{method:'POST',body:JSON.stringify({
-                    kundeId:aktKunde.kundeid,zahlungsartId,
+                    kundeId,zahlungsartId,
                     positionen:warenkorb.map(i=>({varianteId:i.varianteid,menge:i.menge}))
                 })});
             warenkorb=[]; aktKunde=null; renderCart();
@@ -660,7 +603,10 @@
     //  VERKÄUFE
     // ══════════════════════════════════════════════════════
     async function ladeVerkaeufe(){
-        const vs=DEMO?D_VERKAEUFE:await api('/verkauf').catch(()=>[]);
+        const vs=await api('/verkauf').catch(e=>{
+            toast('Fehler: '+e.message,'er');
+            return [];
+        });
         document.getElementById('vtbl').innerHTML=`
     <table class="vtbl">
       <thead><tr>
@@ -686,10 +632,6 @@
 
     async function stornieren(id){
         if(!confirm(`Verkauf #${id} wirklich stornieren?`)) return;
-        if(DEMO){
-            const v=D_VERKAEUFE.find(x=>x.verkaufid==id); if(v) v.zahlungstatus='N';
-            ladeVerkaeufe(); toast(`Verkauf #${id} storniert`,'ok'); return;
-        }
         try{
             await api(`/verkauf/${id}/stornieren`,{method:'PUT'});
             toast(`Verkauf #${id} storniert`,'ok'); ladeVerkaeufe();
