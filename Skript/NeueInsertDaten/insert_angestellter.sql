@@ -1,0 +1,11 @@
+INSERT INTO ANGESTELLTER VALUES (1, 1, NULL, 1, 'Anna', 'Schmidt', 'Filialleiterin', 'anna.schmidt@moebelwelt.de', 'admin123', '0151111111');
+INSERT INTO ANGESTELLTER VALUES (2, 1, 1, 1, 'Lukas', 'Meyer', 'Verkäufer', 'lukas.meyer@moebelwelt.de', 'admin123', '0151111112');
+INSERT INTO ANGESTELLTER VALUES (3, 1, 1, 1, 'Sophie', 'Weber', 'Kassiererin', 'sophie.weber@moebelwelt.de', 'admin123', '0151111113');
+INSERT INTO ANGESTELLTER VALUES (4, 2, NULL, 2, 'Jonas', 'Fischer', 'Filialleiter', 'jonas.fischer@moebelwelt.de', 'admin123', '0151111114');
+INSERT INTO ANGESTELLTER VALUES (5, 2, 4, 2, 'Emma', 'Becker', 'Verkäuferin', 'emma.becker@moebelwelt.de', 'admin123', '0151111115');
+INSERT INTO ANGESTELLTER VALUES (6, 2, 4, 2, 'Leon', 'Wagner', 'Lagerist', 'leon.wagner@moebelwelt.de', 'admin123', '0151111116');
+INSERT INTO ANGESTELLTER VALUES (7, 3, NULL, 3, 'Mia', 'Hoffmann', 'Filialleiterin', 'mia.hoffmann@moebelwelt.de', 'admin123', '0151111117');
+INSERT INTO ANGESTELLTER VALUES (8, 3, 7, 3, 'Paul', 'Koch', 'Verkäufer', 'paul.koch@moebelwelt.de', 'admin123', '0151111118');
+INSERT INTO ANGESTELLTER VALUES (9, 3, 7, 3, 'Clara', 'Richter', 'Dekorateurin', 'clara.richter@moebelwelt.de', 'admin123', '0151111119');
+INSERT INTO ANGESTELLTER VALUES (10, 1, 1, 1, 'Noah', 'Klein', 'Lagerist', 'noah.klein@moebelwelt.de', 'admin123', '0151111120');
+commit;

@@ -1,0 +1,4 @@
+INSERT INTO LAGER VALUES (1, NULL, 500, 'Hauptlager');
+INSERT INTO LAGER VALUES (2, NULL, 250, 'Filiallager');
+INSERT INTO LAGER VALUES (3, NULL, 180, 'Filiallager');
+commit;
