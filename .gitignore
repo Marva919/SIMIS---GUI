@@ -17,4 +17,5 @@
 .jar
 
 .gradle/
+app/.gradle
 build/
