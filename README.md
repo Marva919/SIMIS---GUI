@@ -6,3 +6,4 @@ Rabatte
 Bewertungen Rückgaben
 Mitarbeiter Rollen (nur Admins Bestellungen verwalten)
 
+min preis und max preis 
