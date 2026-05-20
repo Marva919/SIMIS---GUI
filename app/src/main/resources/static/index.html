@@ -159,8 +159,10 @@
         <div class="fbar">
             <div class="fg" style="flex:1;min-width:180px"><label>Suche</label><label for="fs"></label><input type="text" id="fs" placeholder="Name…" oninput="filterP()"></div>
             <div class="fg"><label>Kategorie</label><label for="fk"></label><select id="fk" onchange="filterP()"><option value="">Alle</option></select></div>
-            <div class="fg"><label>Min. Preis €</label><label for="fmin"></label><input type="number" id="fmin" placeholder="0" oninput="filterP()" style="width:100px"></div>
-            <div class="fg"><label>Max. Preis €</label><label for="fmax"></label><input type="number" id="fmax" placeholder="9999" oninput="filterP()" style="width:100px"></div>
+            <div class="fg"><label>Min. Preis €</label><label for="fmin"></label><input type="number" id="fmin" placeholder="0" min="0" step="1" oninput="filterP()" style="width:100px"></div>
+            <div class="fg"><label>Max. Preis €</label><label for="fmax"></label><input type="number" id="fmax" placeholder="9999" min="0" step="1" oninput="filterP()" style="width:100px">
+              <div id="fmax-err" style="display:none;font-size:11px;color:var(--er);margin-top:3px">Max muss ≥ Min sein</div>
+            </div>
         </div>
         <div id="pgrid" class="pgrid"></div>
     </div>
@@ -371,8 +373,23 @@
     function filterP(){
         const s=(document.getElementById('fs').value||'').toLowerCase();
         const k=document.getElementById('fk').value;
-        const mn=parseFloat(document.getElementById('fmin').value)||0;
-        const mx=parseFloat(document.getElementById('fmax').value)||999999;
+        const fminEl=document.getElementById('fmin');
+        const fmaxEl=document.getElementById('fmax');
+        const errEl=document.getElementById('fmax-err');
+
+        // Negative Werte auf 0 korrigieren
+        let mn=parseInt(fminEl.value);
+        if(isNaN(mn)||mn<0){mn=0; if(fminEl.value!=='') fminEl.value=0;}
+        let mx=parseInt(fmaxEl.value);
+        if(!isNaN(mx)&&mx<0){mx=0; fmaxEl.value=0;}
+        if(isNaN(mx)) mx=999999;
+
+        // Min > Max: Fehler anzeigen, Filter nicht anwenden
+        const invalid=!isNaN(parseInt(fminEl.value))&&!isNaN(parseInt(fmaxEl.value))&&mn>mx;
+        errEl.style.display=invalid?'block':'none';
+        fmaxEl.style.borderColor=invalid?'var(--er)':'';
+        if(invalid) return;
+
         renderProdukte(alleProdukte.filter(p=>
             (!s||(p.produktname||'').toLowerCase().includes(s)||(p.beschreibung||'').toLowerCase().includes(s))&&
             (!k||String(p.kategorieid||'')==k||p.kategoriename===document.getElementById('fk').selectedOptions[0]?.text)&&
@@ -749,7 +766,7 @@
         </div>
         <div id="vd-rueckgabe-form" style="display:none;background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);padding:14px;margin-top:8px">
           <div class="fg" style="margin-bottom:10px"><label>Grund</label><textarea id="vd-rg-grund" rows="2" style="width:100%;padding:8px 11px;border:1.5px solid var(--bd);border-radius:var(--r);font-family:'DM Sans',sans-serif;font-size:14px;resize:vertical"></textarea></div>
-          <div class="fg" style="margin-bottom:10px"><label>Erstattungsbetrag (€)</label><input id="vd-rg-betrag" type="number" step="0.01" min="0" style="width:100%;padding:8px 11px;border:1.5px solid var(--bd);border-radius:var(--r);font-size:14px"></div>
+          <div class="fg" style="margin-bottom:10px"><label>Erstattungsbetrag (€)</label><input id="vd-rg-betrag" type="number" step="1" min="0" style="width:100%;padding:8px 11px;border:1.5px solid var(--bd);border-radius:var(--r);font-size:14px"></div>
           <div style="display:flex;gap:8px">
             <button class="btn btn-ok btn-s" onclick="vdRueckgabeSpeichern(${v.verkaufid})">Speichern</button>
             <button class="btn btn-g btn-s" onclick="document.getElementById('vd-rueckgabe-form').style.display='none'">Abbrechen</button>

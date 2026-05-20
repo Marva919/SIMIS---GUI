@@ -3,5 +3,3 @@
 
 Rabatte
 Bewertungen
-
-min preis und max preis 
