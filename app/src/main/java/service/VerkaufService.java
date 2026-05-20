@@ -1,6 +1,7 @@
 package service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +21,18 @@ public class VerkaufService {
   private final StoredProcedureService spService;
   private final JdbcTemplate jdbcTemplate;
 
+  public List<Map<String, Object>> aktiveRabatte() {
+    String sql =
+        """
+            SELECT RABATTID, BEZEICHNUNG, RABATT_PROZENT, START_DATUM, END_DATUM
+            FROM RABATT
+            WHERE START_DATUM <= SYSDATE
+              AND (END_DATUM IS NULL OR END_DATUM >= SYSDATE)
+            ORDER BY RABATT_PROZENT
+            """;
+    return jdbcTemplate.queryForList(sql).stream().map(this::lowercaseKeys).toList();
+  }
+
   public StoredProcedureService.VerkaufErgebnis verkaufErstellen(
       VerkaufAnfrage anfrage, Long filialeId, Long lagerId) {
     String csv =
@@ -27,8 +40,28 @@ public class VerkaufService {
             .map(p -> p.varianteId() + ":" + p.menge())
             .collect(Collectors.joining(","));
 
-    return spService.verkaufErstellen(
-        anfrage.kundeId(), filialeId, anfrage.zahlungsartId(), lagerId, csv);
+    StoredProcedureService.VerkaufErgebnis ergebnis =
+        spService.verkaufErstellen(
+            anfrage.kundeId(), filialeId, anfrage.zahlungsartId(), lagerId, csv);
+
+    if (anfrage.rabattId() != null) {
+      BigDecimal prozent =
+          jdbcTemplate.queryForObject(
+              "SELECT RABATT_PROZENT FROM RABATT WHERE RABATTID = ?",
+              BigDecimal.class,
+              anfrage.rabattId());
+      if (prozent != null && prozent.compareTo(BigDecimal.ZERO) > 0) {
+        BigDecimal faktor =
+            BigDecimal.ONE.subtract(prozent.divide(BigDecimal.valueOf(100), 4, RoundingMode.HALF_UP));
+        jdbcTemplate.update(
+            "UPDATE VERKAUFPOSITION SET EINZELPREIS = ROUND(EINZELPREIS * ?, 2) WHERE VERKAUFID = ?",
+            faktor, ergebnis.verkaufId());
+        BigDecimal rabattierterGesamt =
+            ergebnis.gesamtBetrag().multiply(faktor).setScale(2, RoundingMode.HALF_UP);
+        return new StoredProcedureService.VerkaufErgebnis(ergebnis.verkaufId(), rabattierterGesamt);
+      }
+    }
+    return ergebnis;
   }
 
   public boolean stornieren(Long verkaufId, Long lagerId) {
@@ -175,7 +208,7 @@ public class VerkaufService {
   }
 
   public record VerkaufAnfrage(
-      Long kundeId, Long zahlungsartId, List<PositionAnfrage> positionen) {}
+      Long kundeId, Long zahlungsartId, Long rabattId, List<PositionAnfrage> positionen) {}
 
   public record PositionAnfrage(Long varianteId, int menge) {}
 

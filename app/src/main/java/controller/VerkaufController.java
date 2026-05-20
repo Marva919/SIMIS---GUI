@@ -86,4 +86,9 @@ public class VerkaufController {
   public ResponseEntity<?> nachKunde(@PathVariable Long kundeId) {
     return ResponseEntity.ok(service.nachKundeMitGesamt(kundeId));
   }
+
+  @GetMapping("/rabatte")
+  public ResponseEntity<?> aktiveRabatte() {
+    return ResponseEntity.ok(service.aktiveRabatte());
+  }
 }

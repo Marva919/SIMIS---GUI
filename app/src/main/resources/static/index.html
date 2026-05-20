@@ -196,7 +196,16 @@
             <h3 style="font-size:15px;font-weight:500;margin-bottom:12px;font-family:'DM Sans',sans-serif">2. Bestellpositionen</h3>
             <div id="ocart"></div>
             <hr>
-            <h3 style="font-size:15px;font-weight:500;margin-bottom:12px;font-family:'DM Sans',sans-serif">3. Zahlungsart</h3>
+            <h3 style="font-size:15px;font-weight:500;margin-bottom:12px;font-family:'DM Sans',sans-serif">3. Rabatt</h3>
+            <div class="fg">
+                <label>Aktionsrabatt (optional)</label>
+                <select id="rabatt" onchange="renderOCart()">
+                    <option value="">Kein Rabatt</option>
+                </select>
+                <div id="rabatt-info" style="display:none;margin-top:6px;padding:8px 11px;background:var(--okl);border-radius:var(--r);font-size:12px;color:var(--ok)"></div>
+            </div>
+            <hr>
+            <h3 style="font-size:15px;font-weight:500;margin-bottom:12px;font-family:'DM Sans',sans-serif">4. Zahlungsart</h3>
             <div class="fg">
                 <label>Zahlungsart</label>
                 <select id="zahlungsart">
@@ -277,6 +286,7 @@
     let aktKunde     = null;
     let aktVariante  = null;
     let aktMenge     = 1;
+    let alleRabatte  = [];
 
     // ══════════════════════════════════════════════════════
     //  API Helper
@@ -347,7 +357,7 @@
             el.classList.toggle('on',['produkte','bestellung','verkaeufe'][i]===t);
         });
         if(t==='verkaeufe') ladeVerkaeufe();
-        if(t==='bestellung') renderOCart();
+        if(t==='bestellung'){ladeRabatte();renderOCart();}
     }
 
     // ══════════════════════════════════════════════════════
@@ -591,10 +601,46 @@
     // ══════════════════════════════════════════════════════
     //  BESTELLUNG
     // ══════════════════════════════════════════════════════
+    async function ladeRabatte(){
+        try{
+            alleRabatte=await api('/verkauf/rabatte');
+            const sel=document.getElementById('rabatt');
+            sel.innerHTML='<option value="">Kein Rabatt</option>';
+            alleRabatte.forEach(r=>{
+                const o=document.createElement('option');
+                o.value=r.rabattid;
+                o.textContent=`${r.bezeichnung||'Rabatt'} — ${r.rabatt_prozent}%`;
+                o.dataset.prozent=r.rabatt_prozent;
+                sel.appendChild(o);
+            });
+        }catch(e){/* Silently ignore */}
+    }
+
+    function aktuellerRabatt(){
+        const sel=document.getElementById('rabatt');
+        if(!sel||!sel.value) return null;
+        const opt=sel.selectedOptions[0];
+        return {id:parseInt(sel.value),prozent:parseFloat(opt.dataset.prozent||0)};
+    }
+
     function renderOCart(){
         const el=document.getElementById('ocart');
         if(!warenkorb.length){el.innerHTML='<div style="text-align:center;padding:24px;color:var(--mu)">🛒 Noch keine Artikel im Warenkorb.</div>';return;}
+
+        const rabatt=aktuellerRabatt();
+        const faktor=rabatt?((100-rabatt.prozent)/100):1;
         const total=warenkorb.reduce((s,i)=>s+i.endpreis*i.menge,0);
+        const totalRabattiert=total*faktor;
+
+        // Rabatt-Info-Box aktualisieren
+        const infoEl=document.getElementById('rabatt-info');
+        if(rabatt&&infoEl){
+            infoEl.style.display='block';
+            infoEl.textContent=`✓ ${rabatt.prozent}% Rabatt auf alle Positionen — Sie sparen ${eur(total-totalRabattiert)}`;
+        } else if(infoEl){
+            infoEl.style.display='none';
+        }
+
         el.innerHTML=`<table style="width:100%;border-collapse:collapse;font-size:13px">
     <thead><tr style="border-bottom:1.5px solid var(--bd)">
       <th style="text-align:left;padding:7px 10px;font-size:11px;text-transform:uppercase;color:var(--mu);font-weight:500">Artikel</th>
@@ -603,17 +649,27 @@
       <th></th>
     </tr></thead>
     <tbody>
-      ${warenkorb.map((it,i)=>`<tr style="border-bottom:1px solid var(--bd)">
-        <td style="padding:10px 10px"><strong>${it.produktname}</strong><br>
-          <span style="font-size:11px;color:var(--mu)">${it.farbebezeichnung} · ${it.groesse_beschreibung}</span></td>
-        <td style="text-align:center;padding:10px">${it.menge}</td>
-        <td style="text-align:right;padding:10px;font-weight:500">${eur(it.endpreis*it.menge)}</td>
-        <td style="padding:10px;text-align:right"><button class="btn btn-g btn-s" onclick="crem(${i});renderOCart()" style="padding:4px 8px;font-size:12px">✕</button></td>
-      </tr>`).join('')}
+      ${warenkorb.map((it,i)=>{
+          const orig=it.endpreis*it.menge;
+          const disc=orig*faktor;
+          return `<tr style="border-bottom:1px solid var(--bd)">
+            <td style="padding:10px 10px"><strong>${it.produktname}</strong><br>
+              <span style="font-size:11px;color:var(--mu)">${it.farbebezeichnung} · ${it.groesse_beschreibung}</span></td>
+            <td style="text-align:center;padding:10px">${it.menge}</td>
+            <td style="text-align:right;padding:10px;font-weight:500">
+              ${rabatt?`<span style="text-decoration:line-through;color:var(--mu);font-size:11px">${eur(orig)}</span><br>`:'' }
+              <span style="color:${rabatt?'var(--ok)':'inherit'}">${eur(disc)}</span>
+            </td>
+            <td style="padding:10px;text-align:right"><button class="btn btn-g btn-s" onclick="crem(${i});renderOCart()" style="padding:4px 8px;font-size:12px">✕</button></td>
+          </tr>`;
+      }).join('')}
     </tbody>
     <tfoot><tr>
       <td colspan="2" style="padding:12px 10px;font-weight:600;font-size:14px">Gesamt</td>
-      <td style="padding:12px 10px;text-align:right;font-weight:700;font-size:18px;color:var(--ac)">${eur(total)}</td>
+      <td style="padding:12px 10px;text-align:right">
+        ${rabatt?`<div style="text-decoration:line-through;color:var(--mu);font-size:13px">${eur(total)}</div>`:''}
+        <div style="font-weight:700;font-size:18px;color:var(--ac)">${eur(totalRabattiert)}</div>
+      </td>
       <td></td>
     </tr></tfoot>
   </table>`;
@@ -625,14 +681,18 @@
         const zahlungsartId=parseInt(document.getElementById('zahlungsart').value);
         const kundeId=aktKunde.kundeid||aktKunde.kundeId;
         if(!kundeId){toast('Kunden-ID fehlt','er');return;}
+        const rabatt=aktuellerRabatt();
+        const rabattId=rabatt?rabatt.id:null;
 
         try{
             const r=await api('/verkauf',{method:'POST',body:JSON.stringify({
-                    kundeId,zahlungsartId,
+                    kundeId,zahlungsartId,rabattId,
                     positionen:warenkorb.map(i=>({varianteId:i.varianteid,menge:i.menge}))
                 })});
             warenkorb=[]; aktKunde=null; renderCart();
             document.getElementById('ksel').style.display='none';
+            document.getElementById('rabatt').value='';
+            document.getElementById('rabatt-info').style.display='none';
             toast(`Verkauf #${r.verkaufId} – Gesamt: ${eur(r.gesamtBetrag)}`,'ok');
             gotoTab('verkaeufe');
         } catch(e){toast('Fehler: '+e.message,'er');}
