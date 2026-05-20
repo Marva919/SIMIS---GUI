@@ -97,6 +97,19 @@
         .vtbl tr:hover td{background:var(--al)}
         .stbadge{display:inline-block;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.3px}
         .ST-Y{background:var(--okl);color:var(--ok)}.ST-N{background:var(--erl);color:var(--er)}
+        /* VERKAUF DETAIL MODAL */
+        .vd-sec{margin-bottom:18px}
+        .vd-sec h4{font-size:12px;text-transform:uppercase;letter-spacing:.4px;font-weight:500;color:var(--mu);margin-bottom:10px;border-bottom:1px solid var(--bd);padding-bottom:6px}
+        .vd-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 18px;font-size:13px;margin-bottom:10px}
+        .vd-label{color:var(--mu);font-size:11px;text-transform:uppercase;letter-spacing:.3px;font-weight:500}
+        .vd-val{font-size:13px;font-weight:500}
+        .pos-tbl{width:100%;border-collapse:collapse;font-size:13px}
+        .pos-tbl th{text-align:left;padding:6px 8px;font-size:11px;text-transform:uppercase;letter-spacing:.3px;color:var(--mu);font-weight:500;border-bottom:1px solid var(--bd)}
+        .pos-tbl td{padding:9px 8px;border-bottom:1px solid var(--bd)}
+        .rueck-item{padding:10px;background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);margin-bottom:8px;font-size:13px}
+        .toggle-row{display:flex;align-items:center;gap:10px;padding:10px;background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);margin-bottom:8px}
+        .vtbl tr.clickable{cursor:pointer}
+        .vtbl tr.clickable:hover td{background:var(--al)}
         /* TOAST */
         #tc{position:fixed;top:70px;right:14px;z-index:999;display:flex;flex-direction:column;gap:7px}
         .toast{padding:11px 16px;border-radius:var(--r);font-size:13px;font-weight:500;box-shadow:0 4px 16px rgba(0,0,0,.15);animation:tIn .22s ease;max-width:300px}
@@ -211,6 +224,17 @@
     <div class="modal">
         <div class="mh"><h2 class="mtitle" id="mname"></h2><button class="xbtn" onclick="closeM()">✕</button></div>
         <div id="mbody"></div>
+    </div>
+</div>
+
+<!-- VERKAUF DETAIL MODAL -->
+<div class="ov" id="vmodal" onclick="if(event.target===this)closeVModal()">
+    <div class="modal" style="max-width:680px">
+        <div class="mh">
+            <h2 class="mtitle" id="vmodal-title">Verkauf Details</h2>
+            <button class="xbtn" onclick="closeVModal()">✕</button>
+        </div>
+        <div id="vmodal-body"></div>
     </div>
 </div>
 
@@ -612,20 +636,24 @@
         <th>Positionen</th><th>Gesamt</th><th>Zahlungsstatus</th><th></th>
       </tr></thead>
       <tbody>
-        ${vs.map(v=>`<tr>
-          <td style="font-family:monospace">#${v.verkaufid||v.verkaufId}</td>
-          <td>${v.kunde||'–'}</td>
-          <td style="color:var(--mu);font-size:12px">${v.verkaufsdatum||v.verkaufsDatum||''}</td>
-          <td>${v.anzahl||'–'}</td>
-          <td style="font-weight:500">${eur(v.gesamt||0)}</td>
-          <td><span class="stbadge ST-${v.zahlungstatus||v.zahlungStatus}">
-            ${(v.zahlungstatus||v.zahlungStatus)==='Y'?'Bezahlt':'Storniert'}
-          </span></td>
-          <td>${(v.zahlungstatus||v.zahlungStatus)==='Y'?`<button class="btn btn-er btn-s" onclick="stornieren(${v.verkaufid||v.verkaufId})">Stornieren</button>`:''}
-          </td>
-        </tr>`).join('')}
+        ${vs.map(v=>{
+            const vid=v.verkaufid||v.verkaufId;
+            const st=v.zahlungstatus||v.zahlungStatus;
+            return `<tr class="clickable" onclick="openVerkaufDetail(${vid})">
+              <td style="font-family:monospace">#${vid}</td>
+              <td>${v.kunde||'–'}</td>
+              <td style="color:var(--mu);font-size:12px">${fmtDatum(v.verkaufsdatum||v.verkaufsDatum)}</td>
+              <td>${v.anzahl||'–'}</td>
+              <td style="font-weight:500">${eur(v.gesamt||0)}</td>
+              <td><span class="stbadge ST-${st}">${st==='Y'?'Bezahlt':'Storniert'}</span></td>
+              <td onclick="event.stopPropagation()">
+                ${st==='Y'?`<button class="btn btn-er btn-s" onclick="stornieren(${vid})">Stornieren</button>`:''}
+              </td>
+            </tr>`;
+        }).join('')}
       </tbody>
-    </table>`;
+    </table>
+    <p style="font-size:12px;color:var(--mu);padding:10px 14px">Zeile anklicken für Details &amp; Bearbeitung</p>`;
     }
 
     async function stornieren(id){
@@ -634,6 +662,142 @@
             await api(`/verkauf/${id}/stornieren`,{method:'PUT'});
             toast(`Verkauf #${id} storniert`,'ok'); ladeVerkaeufe();
         } catch(e){toast('Fehler: '+e.message,'er');}
+    }
+
+    // ══════════════════════════════════════════════════════
+    //  VERKAUF DETAIL MODAL
+    // ══════════════════════════════════════════════════════
+    async function openVerkaufDetail(id){
+        document.getElementById('vmodal-title').textContent='Verkauf #'+id;
+        document.getElementById('vmodal-body').innerHTML='<div style="text-align:center;padding:32px;color:var(--mu)">Lade Details…</div>';
+        document.getElementById('vmodal').classList.add('open');
+        try{
+            const v=await api('/verkauf/'+id);
+            renderVerkaufDetail(v);
+        } catch(e){
+            document.getElementById('vmodal-body').innerHTML='<div style="color:var(--er)">Fehler: '+e.message+'</div>';
+        }
+    }
+
+    function renderVerkaufDetail(v){
+        const st=v.zahlungstatus||v.zahlungStatus;
+        const positionen=v.positionen||[];
+        const rueckgaben=v.rueckgaben||[];
+
+        document.getElementById('vmodal-body').innerHTML=`
+      <!-- Stammdaten -->
+      <div class="vd-sec">
+        <h4>Stammdaten</h4>
+        <div class="vd-grid">
+          <div><div class="vd-label">Kunde</div><div class="vd-val">${v.kunde||'–'}</div></div>
+          <div><div class="vd-label">E-Mail</div><div class="vd-val">${v.email||'–'}</div></div>
+          <div><div class="vd-label">Datum</div><div class="vd-val">${fmtDatum(v.verkaufsdatum)}</div></div>
+          <div><div class="vd-label">Zahlungsart</div><div class="vd-val">${v.zahlungsart||'–'}</div></div>
+          <div><div class="vd-label">Positionen</div><div class="vd-val">${v.anzahl||'–'}</div></div>
+          <div><div class="vd-label">Gesamtbetrag</div><div class="vd-val" style="color:var(--ac);font-size:15px">${eur(v.gesamt||0)}</div></div>
+        </div>
+      </div>
+
+      <!-- Zahlungsstatus -->
+      <div class="vd-sec">
+        <h4>Zahlungsstatus</h4>
+        <div class="toggle-row">
+          <span class="stbadge ST-${st}" id="vd-stbadge">${st==='Y'?'Bezahlt':'Storniert'}</span>
+          <span style="flex:1;font-size:13px;color:var(--mu)">${st==='Y'?'Der Verkauf ist als bezahlt markiert.':'Der Verkauf ist storniert / offen.'}</span>
+          ${st==='Y'
+            ? `<button class="btn btn-er btn-s" onclick="vdSetStatus(${v.verkaufid},'N')">Als offen markieren</button>`
+            : `<button class="btn btn-ok btn-s" onclick="vdSetStatus(${v.verkaufid},'Y')">Als bezahlt markieren</button>`
+          }
+        </div>
+        ${st==='Y'?`<button class="btn btn-er btn-s" style="width:100%;justify-content:center" onclick="storniereVD(${v.verkaufid})">Verkauf stornieren</button>`:''}
+      </div>
+
+      <!-- Positionen -->
+      <div class="vd-sec">
+        <h4>Bestellpositionen</h4>
+        ${positionen.length===0
+          ? '<p style="font-size:13px;color:var(--mu)">Keine Positionen gefunden.</p>'
+          : `<table class="pos-tbl">
+              <thead><tr><th>Artikel</th><th>Variante</th><th style="text-align:right">Menge</th><th style="text-align:right">Einzelpreis</th><th style="text-align:right">Summe</th></tr></thead>
+              <tbody>
+                ${positionen.map(p=>`<tr>
+                  <td><strong>${p.produktname||'–'}</strong></td>
+                  <td style="color:var(--mu)">${p.farbe||''} ${p.groesse?'· '+p.groesse:''}</td>
+                  <td style="text-align:right">${p.menge}</td>
+                  <td style="text-align:right">${eur(p.einzelpreis)}</td>
+                  <td style="text-align:right;font-weight:500">${eur((p.menge||0)*(p.einzelpreis||0))}</td>
+                </tr>`).join('')}
+              </tbody>
+             </table>`
+        }
+      </div>
+
+      <!-- Rückgaben -->
+      <div class="vd-sec">
+        <h4>Rückgaben</h4>
+        <div id="vd-rueckgaben">
+          ${rueckgaben.length===0
+            ? '<p style="font-size:13px;color:var(--mu);margin-bottom:10px">Noch keine Rückgaben erfasst.</p>'
+            : rueckgaben.map(r=>`<div class="rueck-item">
+                <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+                  <strong style="font-size:12px">Rückgabe #${r.rueckgabeid}</strong>
+                  <span style="color:var(--er);font-weight:600">${eur(r.betrag_erstattung)}</span>
+                </div>
+                <div style="color:var(--mu);font-size:12px">${fmtDatum(r.datum)} · ${r.grund||''}</div>
+              </div>`).join('')
+          }
+        </div>
+        <div id="vd-rueckgabe-form" style="display:none;background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);padding:14px;margin-top:8px">
+          <div class="fg" style="margin-bottom:10px"><label>Grund</label><textarea id="vd-rg-grund" rows="2" style="width:100%;padding:8px 11px;border:1.5px solid var(--bd);border-radius:var(--r);font-family:'DM Sans',sans-serif;font-size:14px;resize:vertical"></textarea></div>
+          <div class="fg" style="margin-bottom:10px"><label>Erstattungsbetrag (€)</label><input id="vd-rg-betrag" type="number" step="0.01" min="0" style="width:100%;padding:8px 11px;border:1.5px solid var(--bd);border-radius:var(--r);font-size:14px"></div>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-ok btn-s" onclick="vdRueckgabeSpeichern(${v.verkaufid})">Speichern</button>
+            <button class="btn btn-g btn-s" onclick="document.getElementById('vd-rueckgabe-form').style.display='none'">Abbrechen</button>
+          </div>
+        </div>
+        <button class="btn btn-o btn-s" style="margin-top:8px" onclick="document.getElementById('vd-rueckgabe-form').style.display='block'">+ Rückgabe erfassen</button>
+      </div>`;
+    }
+
+    function closeVModal(){
+        document.getElementById('vmodal').classList.remove('open');
+        ladeVerkaeufe();
+    }
+
+    async function vdSetStatus(id, status){
+        try{
+            await api(`/verkauf/${id}/zahlungstatus`,{method:'PATCH',body:JSON.stringify({status})});
+            toast('Zahlungsstatus aktualisiert','ok');
+            openVerkaufDetail(id);
+        } catch(e){toast('Fehler: '+e.message,'er');}
+    }
+
+    async function storniereVD(id){
+        if(!confirm(`Verkauf #${id} wirklich stornieren?`)) return;
+        try{
+            await api(`/verkauf/${id}/stornieren`,{method:'PUT'});
+            toast(`Verkauf #${id} storniert`,'ok');
+            openVerkaufDetail(id);
+        } catch(e){toast('Fehler: '+e.message,'er');}
+    }
+
+    async function vdRueckgabeSpeichern(verkaufId){
+        const grund=document.getElementById('vd-rg-grund').value.trim();
+        const betrag=parseFloat(document.getElementById('vd-rg-betrag').value);
+        if(!grund){toast('Bitte einen Grund eingeben','inf');return;}
+        if(!betrag||betrag<=0){toast('Bitte einen gültigen Betrag eingeben','inf');return;}
+        try{
+            await api(`/verkauf/${verkaufId}/rueckgabe`,{method:'POST',body:JSON.stringify({grund,betrag})});
+            toast('Rückgabe erfasst','ok');
+            openVerkaufDetail(verkaufId);
+        } catch(e){toast('Fehler: '+e.message,'er');}
+    }
+
+    function fmtDatum(d){
+        if(!d) return '–';
+        const dt=new Date(d);
+        if(isNaN(dt)) return String(d).split('T')[0];
+        return dt.toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric'});
     }
 
     // ══════════════════════════════════════════════════════

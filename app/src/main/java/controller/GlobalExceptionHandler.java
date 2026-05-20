@@ -6,6 +6,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.http.*;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @RestControllerAdvice
 @Slf4j
@@ -15,6 +16,11 @@ public class GlobalExceptionHandler {
   public ResponseEntity<?> handleBadCredentials(BadCredentialsException ex) {
     return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
         .body(Map.of("error", "Ungültige Anmeldedaten"));
+  }
+
+  @ExceptionHandler(NoResourceFoundException.class)
+  public ResponseEntity<?> handleNoResource(NoResourceFoundException ex) {
+    return ResponseEntity.notFound().build();
   }
 
   @ExceptionHandler(DataAccessException.class)

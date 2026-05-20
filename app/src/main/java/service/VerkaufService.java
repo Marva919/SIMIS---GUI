@@ -1,8 +1,10 @@
 package service;
 
+import java.math.BigDecimal;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import model.Verkauf;
@@ -45,6 +47,98 @@ public class VerkaufService {
     return verkaufsUebersicht("v.FILIALEID = ?", filialeId);
   }
 
+  public Map<String, Object> details(Long verkaufId) {
+    String sql =
+        """
+            SELECT
+                v.VERKAUFID,
+                v.KUNDEID,
+                k.VORNAME || ' ' || k.NACHNAME AS KUNDE,
+                k.EMAIL,
+                v.VERKAUFSDATUM,
+                v.ZAHLUNGSTATUS,
+                v.ANZAHL,
+                v.ZAHLUNGSARTID,
+                z.BEZEICHNUNG AS ZAHLUNGSART,
+                NVL(SUM(vp.MENGE * vp.EINZELPREIS), 0) AS GESAMT
+            FROM VERKAUF v
+            LEFT JOIN KUNDE k ON k.KUNDEID = v.KUNDEID
+            LEFT JOIN VERKAUFPOSITION vp ON vp.VERKAUFID = v.VERKAUFID
+            LEFT JOIN ZAHLUNGSART z ON z.ZAHLUNGSARTID = v.ZAHLUNGSARTID
+            WHERE v.VERKAUFID = ?
+            GROUP BY
+                v.VERKAUFID, v.KUNDEID, k.VORNAME, k.NACHNAME,
+                k.EMAIL, v.VERKAUFSDATUM, v.ZAHLUNGSTATUS,
+                v.ANZAHL, v.ZAHLUNGSARTID, z.BEZEICHNUNG
+            """;
+
+    List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql, verkaufId);
+    if (rows.isEmpty()) throw new NoSuchElementException("Verkauf " + verkaufId + " nicht gefunden");
+
+    Map<String, Object> header = lowercaseKeys(rows.get(0));
+
+    String positionenSql =
+        """
+            SELECT
+                vp.VERKAUFPOSITIONID,
+                vp.VARIANTEID,
+                vp.MENGE,
+                vp.EINZELPREIS,
+                p.NAME AS PRODUKTNAME,
+                f.FARBEBEZEICHNUNG AS FARBE,
+                g.BESCHREIBUNG AS GROESSE
+            FROM VERKAUFPOSITION vp
+            LEFT JOIN PRODUKTVARIANTE pv ON pv.VARIANTEID = vp.VARIANTEID
+            LEFT JOIN PRODUKT p ON p.PRODUKTID = pv.PRODUKTID
+            LEFT JOIN FARBE f ON f.FARBENID = pv.FARBENID
+            LEFT JOIN GROESSE g ON g.GROESSEID = pv.GROESSEID
+            WHERE vp.VERKAUFID = ?
+            ORDER BY vp.VERKAUFPOSITIONID
+            """;
+    List<Map<String, Object>> positionen =
+        jdbcTemplate.queryForList(positionenSql, verkaufId).stream()
+            .map(this::lowercaseKeys)
+            .toList();
+
+    String rueckgabenSql =
+        """
+            SELECT
+                r.RUECKGABEID,
+                r.DATUM,
+                r.GRUND,
+                r.BETRAG_ERSTATTUNG
+            FROM RUECKGABE r
+            WHERE r.VERKAUFID = ?
+            ORDER BY r.DATUM DESC
+            """;
+    List<Map<String, Object>> rueckgaben =
+        jdbcTemplate.queryForList(rueckgabenSql, verkaufId).stream()
+            .map(this::lowercaseKeys)
+            .toList();
+
+    header.put("positionen", positionen);
+    header.put("rueckgaben", rueckgaben);
+    return header;
+  }
+
+  public void zahlungsstatusAktualisieren(Long verkaufId, String status) {
+    if (!status.equals("Y") && !status.equals("N"))
+      throw new IllegalArgumentException("Status muss Y oder N sein");
+    int updated = jdbcTemplate.update("UPDATE VERKAUF SET ZAHLUNGSTATUS=? WHERE VERKAUFID=?", status, verkaufId);
+    if (updated == 0) throw new NoSuchElementException("Verkauf " + verkaufId + " nicht gefunden");
+  }
+
+  public void rueckgabeErfassen(Long verkaufId, Long lagerId, Long kundeId, String grund, BigDecimal betrag) {
+    Long nextId = jdbcTemplate.queryForObject(
+        "SELECT NVL(MAX(RUECKGABEID), 0) + 1 FROM RUECKGABE", Long.class);
+    jdbcTemplate.update(
+        """
+            INSERT INTO RUECKGABE (RUECKGABEID, VERKAUFID, LAGERID, KUNDEID, DATUM, GRUND, BETRAG_ERSTATTUNG)
+            VALUES (?, ?, ?, ?, SYSDATE, ?, ?)
+            """,
+        nextId, verkaufId, lagerId, kundeId, grund, betrag);
+  }
+
   private List<Map<String, Object>> verkaufsUebersicht(String whereClause, Long parameter) {
     String sql =
         """
@@ -84,4 +178,8 @@ public class VerkaufService {
       Long kundeId, Long zahlungsartId, List<PositionAnfrage> positionen) {}
 
   public record PositionAnfrage(Long varianteId, int menge) {}
+
+  public record ZahlungsstatusAnfrage(String status) {}
+
+  public record RueckgabeAnfrage(String grund, java.math.BigDecimal betrag) {}
 }
