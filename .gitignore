@@ -1,21 +1,23 @@
-.class
+# Compiled
+*.class
+*.jar
+*.war
 
-# IDEA
-# ----
-.idea
-.idea/
-.shelf
-/*.iml
-/*.ipr
-/*.iws
-/out
+# Logs
+*.log
 
-/out/*.*
-
-.log
-
-.jar
-
+# Gradle
 .gradle/
-app/.gradle
+app/.gradle/
 build/
+app/build/
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+
+# macOS
+.DS_Store
