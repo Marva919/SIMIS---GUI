@@ -96,7 +96,7 @@
         .vtbl td{padding:11px 12px;font-size:13px;border-bottom:1px solid var(--bd)}
         .vtbl tr:hover td{background:var(--al)}
         .stbadge{display:inline-block;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.3px}
-        .ST-Y{background:var(--okl);color:var(--ok)}.ST-N{background:var(--erl);color:var(--er)}
+        .ST-Y{background:var(--okl);color:var(--ok)}.ST-N{background:var(--wnl);color:var(--wn)}.ST-S{background:var(--erl);color:var(--er)}
         /* VERKAUF DETAIL MODAL */
         .vd-sec{margin-bottom:18px}
         .vd-sec h4{font-size:12px;text-transform:uppercase;letter-spacing:.4px;font-weight:500;color:var(--mu);margin-bottom:10px;border-bottom:1px solid var(--bd);padding-bottom:6px}
@@ -128,7 +128,7 @@
 <!-- LOGIN -->
 <div id="login">
     <div class="card">
-        <div class="logo"><h1>🪑 SIMIS</h1><p>Mitarbeiterportal · Intern</p></div>
+        <div class="logo"><img src="/logo-simis.png" alt="SIMIS" style="width:150px;margin-bottom:8px"><p>Mitarbeiterportal · Intern</p></div>
         <div class="fg"><label>E-Mail</label><input type="email" id="le"></div>
         <div class="fg"><label>Passwort</label><input type="password" id="lp"></div>
         <button class="btn btn-p" onclick="doLogin()">Anmelden</button>
@@ -139,7 +139,7 @@
 <!-- APP -->
 <div id="app">
     <div class="topbar">
-        <span class="brand">🪑 SIMIS</span>
+        <span class="brand"><img src="/logo-simis.png" alt="SIMIS" style="height:38px;vertical-align:middle"></span>
         <div class="ubadge">
             <div class="uav" id="uav">M</div>
             <span id="uname">Mitarbeiter</span>
@@ -722,9 +722,9 @@
               <td style="color:var(--mu);font-size:12px">${fmtDatum(v.verkaufsdatum||v.verkaufsDatum)}</td>
               <td>${v.anzahl||'–'}</td>
               <td style="font-weight:500">${eur(v.gesamt||0)}</td>
-              <td><span class="stbadge ST-${st}">${st==='Y'?'Bezahlt':'Storniert'}</span></td>
+              <td><span class="stbadge ST-${st}">${st==='Y'?'Bezahlt':st==='N'?'Offen':'Storniert'}</span></td>
               <td onclick="event.stopPropagation()">
-                ${st==='Y'?`<button class="btn btn-er btn-s" onclick="stornieren(${vid})">Stornieren</button>`:''}
+                ${st!=='S'?`<button class="btn btn-er btn-s" onclick="stornieren(${vid})">Stornieren</button>`:''}
               </td>
             </tr>`;
         }).join('')}
@@ -779,14 +779,16 @@
       <div class="vd-sec">
         <h4>Zahlungsstatus</h4>
         <div class="toggle-row">
-          <span class="stbadge ST-${st}" id="vd-stbadge">${st==='Y'?'Bezahlt':'Storniert'}</span>
-          <span style="flex:1;font-size:13px;color:var(--mu)">${st==='Y'?'Der Verkauf ist als bezahlt markiert.':'Der Verkauf ist storniert / offen.'}</span>
+          <span class="stbadge ST-${st}" id="vd-stbadge">${st==='Y'?'Bezahlt':st==='N'?'Offen':'Storniert'}</span>
+          <span style="flex:1;font-size:13px;color:var(--mu)">${st==='Y'?'Der Verkauf ist als bezahlt markiert.':st==='N'?'Der Verkauf ist offen / noch nicht bezahlt.':'Der Verkauf wurde storniert.'}</span>
           ${st==='Y'
             ? `<button class="btn btn-er btn-s" onclick="vdSetStatus(${v.verkaufid},'N')">Als offen markieren</button>`
-            : `<button class="btn btn-ok btn-s" onclick="vdSetStatus(${v.verkaufid},'Y')">Als bezahlt markieren</button>`
+            : st==='N'
+              ? `<button class="btn btn-ok btn-s" onclick="vdSetStatus(${v.verkaufid},'Y')">Als bezahlt markieren</button>`
+              : ''
           }
         </div>
-        ${st==='Y'?`<button class="btn btn-er btn-s" style="width:100%;justify-content:center" onclick="storniereVD(${v.verkaufid})">Verkauf stornieren</button>`:''}
+        ${st!=='S'?`<button class="btn btn-er btn-s" style="width:100%;justify-content:center" onclick="storniereVD(${v.verkaufid})">Verkauf stornieren</button>`:''}
       </div>
 
       <!-- Positionen -->

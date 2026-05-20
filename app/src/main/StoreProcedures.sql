@@ -151,8 +151,7 @@ BEGIN
     END LOOP;
 
     UPDATE VERKAUF
-    SET    ANZAHL        = (SELECT COUNT(*) FROM VERKAUFPOSITION WHERE VERKAUFID = v_verkaufid),
-           ZAHLUNGSTATUS = 'Y'
+    SET    ANZAHL = (SELECT COUNT(*) FROM VERKAUFPOSITION WHERE VERKAUFID = v_verkaufid)
     WHERE  VERKAUFID = v_verkaufid;
 
     COMMIT;
@@ -178,7 +177,7 @@ BEGIN
     WHERE  VERKAUFID = p_verkaufid
         FOR UPDATE;
 
-    IF v_status = 'N' THEN
+    IF v_status = 'S' THEN
         RAISE_APPLICATION_ERROR(-20020,
                                 'Verkauf ' || p_verkaufid || ' ist bereits storniert.');
     END IF;
@@ -198,7 +197,7 @@ BEGIN
                 (SEQ_LAGERBEWEGUNG.NEXTVAL, v_bestandid, v_bestandid, SYSDATE, 'I', pos.MENGE);
         END LOOP;
 
-    UPDATE VERKAUF SET ZAHLUNGSTATUS = 'N' WHERE VERKAUFID = p_verkaufid;
+    UPDATE VERKAUF SET ZAHLUNGSTATUS = 'S' WHERE VERKAUFID = p_verkaufid;
 
     COMMIT;
     p_erfolg := 1;
