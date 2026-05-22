@@ -96,7 +96,7 @@
         .vtbl td{padding:11px 12px;font-size:13px;border-bottom:1px solid var(--bd)}
         .vtbl tr:hover td{background:var(--al)}
         .stbadge{display:inline-block;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.3px}
-        .ST-Y{background:var(--okl);color:var(--ok)}.ST-N{background:var(--erl);color:var(--er)}
+        .ST-Y{background:var(--okl);color:var(--ok)}.ST-N{background:var(--wnl);color:var(--wn)}.ST-S{background:var(--erl);color:var(--er)}
         /* VERKAUF DETAIL MODAL */
         .vd-sec{margin-bottom:18px}
         .vd-sec h4{font-size:12px;text-transform:uppercase;letter-spacing:.4px;font-weight:500;color:var(--mu);margin-bottom:10px;border-bottom:1px solid var(--bd);padding-bottom:6px}
@@ -128,7 +128,7 @@
 <!-- LOGIN -->
 <div id="login">
     <div class="card">
-        <div class="logo"><h1>🪑 SIMIS</h1><p>Mitarbeiterportal · Intern</p></div>
+        <div class="logo"><img src="/logo-simis.png" alt="SIMIS" style="width:150px;margin-bottom:8px"><p>Mitarbeiterportal · Intern</p></div>
         <div class="fg"><label>E-Mail</label><input type="email" id="le"></div>
         <div class="fg"><label>Passwort</label><input type="password" id="lp"></div>
         <button class="btn btn-p" onclick="doLogin()">Anmelden</button>
@@ -139,7 +139,7 @@
 <!-- APP -->
 <div id="app">
     <div class="topbar">
-        <span class="brand">🪑 SIMIS</span>
+        <span class="brand"><img src="/logo-simis.png" alt="SIMIS" style="height:38px;vertical-align:middle"></span>
         <div class="ubadge">
             <div class="uav" id="uav">M</div>
             <span id="uname">Mitarbeiter</span>
@@ -159,8 +159,10 @@
         <div class="fbar">
             <div class="fg" style="flex:1;min-width:180px"><label>Suche</label><label for="fs"></label><input type="text" id="fs" placeholder="Name…" oninput="filterP()"></div>
             <div class="fg"><label>Kategorie</label><label for="fk"></label><select id="fk" onchange="filterP()"><option value="">Alle</option></select></div>
-            <div class="fg"><label>Min. Preis €</label><label for="fmin"></label><input type="number" id="fmin" placeholder="0" oninput="filterP()" style="width:100px"></div>
-            <div class="fg"><label>Max. Preis €</label><label for="fmax"></label><input type="number" id="fmax" placeholder="9999" oninput="filterP()" style="width:100px"></div>
+            <div class="fg"><label>Min. Preis €</label><label for="fmin"></label><input type="number" id="fmin" placeholder="0" min="0" step="1" oninput="filterP()" style="width:100px"></div>
+            <div class="fg"><label>Max. Preis €</label><label for="fmax"></label><input type="number" id="fmax" placeholder="9999" min="0" step="1" oninput="filterP()" style="width:100px">
+              <div id="fmax-err" style="display:none;font-size:11px;color:var(--er);margin-top:3px">Max muss ≥ Min sein</div>
+            </div>
         </div>
         <div id="pgrid" class="pgrid"></div>
     </div>
@@ -194,7 +196,16 @@
             <h3 style="font-size:15px;font-weight:500;margin-bottom:12px;font-family:'DM Sans',sans-serif">2. Bestellpositionen</h3>
             <div id="ocart"></div>
             <hr>
-            <h3 style="font-size:15px;font-weight:500;margin-bottom:12px;font-family:'DM Sans',sans-serif">3. Zahlungsart</h3>
+            <h3 style="font-size:15px;font-weight:500;margin-bottom:12px;font-family:'DM Sans',sans-serif">3. Rabatt</h3>
+            <div class="fg">
+                <label>Aktionsrabatt (optional)</label>
+                <select id="rabatt" onchange="renderOCart()">
+                    <option value="">Kein Rabatt</option>
+                </select>
+                <div id="rabatt-info" style="display:none;margin-top:6px;padding:8px 11px;background:var(--okl);border-radius:var(--r);font-size:12px;color:var(--ok)"></div>
+            </div>
+            <hr>
+            <h3 style="font-size:15px;font-weight:500;margin-bottom:12px;font-family:'DM Sans',sans-serif">4. Zahlungsart</h3>
             <div class="fg">
                 <label>Zahlungsart</label>
                 <select id="zahlungsart">
@@ -275,6 +286,7 @@
     let aktKunde     = null;
     let aktVariante  = null;
     let aktMenge     = 1;
+    let alleRabatte  = [];
 
     // ══════════════════════════════════════════════════════
     //  API Helper
@@ -345,7 +357,7 @@
             el.classList.toggle('on',['produkte','bestellung','verkaeufe'][i]===t);
         });
         if(t==='verkaeufe') ladeVerkaeufe();
-        if(t==='bestellung') renderOCart();
+        if(t==='bestellung'){ladeRabatte();renderOCart();}
     }
 
     // ══════════════════════════════════════════════════════
@@ -371,8 +383,23 @@
     function filterP(){
         const s=(document.getElementById('fs').value||'').toLowerCase();
         const k=document.getElementById('fk').value;
-        const mn=parseFloat(document.getElementById('fmin').value)||0;
-        const mx=parseFloat(document.getElementById('fmax').value)||999999;
+        const fminEl=document.getElementById('fmin');
+        const fmaxEl=document.getElementById('fmax');
+        const errEl=document.getElementById('fmax-err');
+
+        // Negative Werte auf 0 korrigieren
+        let mn=parseInt(fminEl.value);
+        if(isNaN(mn)||mn<0){mn=0; if(fminEl.value!=='') fminEl.value=0;}
+        let mx=parseInt(fmaxEl.value);
+        if(!isNaN(mx)&&mx<0){mx=0; fmaxEl.value=0;}
+        if(isNaN(mx)) mx=999999;
+
+        // Min > Max: Fehler anzeigen, Filter nicht anwenden
+        const invalid=!isNaN(parseInt(fminEl.value))&&!isNaN(parseInt(fmaxEl.value))&&mn>mx;
+        errEl.style.display=invalid?'block':'none';
+        fmaxEl.style.borderColor=invalid?'var(--er)':'';
+        if(invalid) return;
+
         renderProdukte(alleProdukte.filter(p=>
             (!s||(p.produktname||'').toLowerCase().includes(s)||(p.beschreibung||'').toLowerCase().includes(s))&&
             (!k||String(p.kategorieid||'')==k||p.kategoriename===document.getElementById('fk').selectedOptions[0]?.text)&&
@@ -574,10 +601,46 @@
     // ══════════════════════════════════════════════════════
     //  BESTELLUNG
     // ══════════════════════════════════════════════════════
+    async function ladeRabatte(){
+        try{
+            alleRabatte=await api('/verkauf/rabatte');
+            const sel=document.getElementById('rabatt');
+            sel.innerHTML='<option value="">Kein Rabatt</option>';
+            alleRabatte.forEach(r=>{
+                const o=document.createElement('option');
+                o.value=r.rabattid;
+                o.textContent=`${r.bezeichnung||'Rabatt'} — ${r.rabatt_prozent}%`;
+                o.dataset.prozent=r.rabatt_prozent;
+                sel.appendChild(o);
+            });
+        }catch(e){/* Silently ignore */}
+    }
+
+    function aktuellerRabatt(){
+        const sel=document.getElementById('rabatt');
+        if(!sel||!sel.value) return null;
+        const opt=sel.selectedOptions[0];
+        return {id:parseInt(sel.value),prozent:parseFloat(opt.dataset.prozent||0)};
+    }
+
     function renderOCart(){
         const el=document.getElementById('ocart');
         if(!warenkorb.length){el.innerHTML='<div style="text-align:center;padding:24px;color:var(--mu)">🛒 Noch keine Artikel im Warenkorb.</div>';return;}
+
+        const rabatt=aktuellerRabatt();
+        const faktor=rabatt?((100-rabatt.prozent)/100):1;
         const total=warenkorb.reduce((s,i)=>s+i.endpreis*i.menge,0);
+        const totalRabattiert=total*faktor;
+
+        // Rabatt-Info-Box aktualisieren
+        const infoEl=document.getElementById('rabatt-info');
+        if(rabatt&&infoEl){
+            infoEl.style.display='block';
+            infoEl.textContent=`✓ ${rabatt.prozent}% Rabatt auf alle Positionen — Sie sparen ${eur(total-totalRabattiert)}`;
+        } else if(infoEl){
+            infoEl.style.display='none';
+        }
+
         el.innerHTML=`<table style="width:100%;border-collapse:collapse;font-size:13px">
     <thead><tr style="border-bottom:1.5px solid var(--bd)">
       <th style="text-align:left;padding:7px 10px;font-size:11px;text-transform:uppercase;color:var(--mu);font-weight:500">Artikel</th>
@@ -586,17 +649,27 @@
       <th></th>
     </tr></thead>
     <tbody>
-      ${warenkorb.map((it,i)=>`<tr style="border-bottom:1px solid var(--bd)">
-        <td style="padding:10px 10px"><strong>${it.produktname}</strong><br>
-          <span style="font-size:11px;color:var(--mu)">${it.farbebezeichnung} · ${it.groesse_beschreibung}</span></td>
-        <td style="text-align:center;padding:10px">${it.menge}</td>
-        <td style="text-align:right;padding:10px;font-weight:500">${eur(it.endpreis*it.menge)}</td>
-        <td style="padding:10px;text-align:right"><button class="btn btn-g btn-s" onclick="crem(${i});renderOCart()" style="padding:4px 8px;font-size:12px">✕</button></td>
-      </tr>`).join('')}
+      ${warenkorb.map((it,i)=>{
+          const orig=it.endpreis*it.menge;
+          const disc=orig*faktor;
+          return `<tr style="border-bottom:1px solid var(--bd)">
+            <td style="padding:10px 10px"><strong>${it.produktname}</strong><br>
+              <span style="font-size:11px;color:var(--mu)">${it.farbebezeichnung} · ${it.groesse_beschreibung}</span></td>
+            <td style="text-align:center;padding:10px">${it.menge}</td>
+            <td style="text-align:right;padding:10px;font-weight:500">
+              ${rabatt?`<span style="text-decoration:line-through;color:var(--mu);font-size:11px">${eur(orig)}</span><br>`:'' }
+              <span style="color:${rabatt?'var(--ok)':'inherit'}">${eur(disc)}</span>
+            </td>
+            <td style="padding:10px;text-align:right"><button class="btn btn-g btn-s" onclick="crem(${i});renderOCart()" style="padding:4px 8px;font-size:12px">✕</button></td>
+          </tr>`;
+      }).join('')}
     </tbody>
     <tfoot><tr>
       <td colspan="2" style="padding:12px 10px;font-weight:600;font-size:14px">Gesamt</td>
-      <td style="padding:12px 10px;text-align:right;font-weight:700;font-size:18px;color:var(--ac)">${eur(total)}</td>
+      <td style="padding:12px 10px;text-align:right">
+        ${rabatt?`<div style="text-decoration:line-through;color:var(--mu);font-size:13px">${eur(total)}</div>`:''}
+        <div style="font-weight:700;font-size:18px;color:var(--ac)">${eur(totalRabattiert)}</div>
+      </td>
       <td></td>
     </tr></tfoot>
   </table>`;
@@ -608,14 +681,18 @@
         const zahlungsartId=parseInt(document.getElementById('zahlungsart').value);
         const kundeId=aktKunde.kundeid||aktKunde.kundeId;
         if(!kundeId){toast('Kunden-ID fehlt','er');return;}
+        const rabatt=aktuellerRabatt();
+        const rabattId=rabatt?rabatt.id:null;
 
         try{
             const r=await api('/verkauf',{method:'POST',body:JSON.stringify({
-                    kundeId,zahlungsartId,
+                    kundeId,zahlungsartId,rabattId,
                     positionen:warenkorb.map(i=>({varianteId:i.varianteid,menge:i.menge}))
                 })});
             warenkorb=[]; aktKunde=null; renderCart();
             document.getElementById('ksel').style.display='none';
+            document.getElementById('rabatt').value='';
+            document.getElementById('rabatt-info').style.display='none';
             toast(`Verkauf #${r.verkaufId} – Gesamt: ${eur(r.gesamtBetrag)}`,'ok');
             gotoTab('verkaeufe');
         } catch(e){toast('Fehler: '+e.message,'er');}
@@ -645,9 +722,9 @@
               <td style="color:var(--mu);font-size:12px">${fmtDatum(v.verkaufsdatum||v.verkaufsDatum)}</td>
               <td>${v.anzahl||'–'}</td>
               <td style="font-weight:500">${eur(v.gesamt||0)}</td>
-              <td><span class="stbadge ST-${st}">${st==='Y'?'Bezahlt':'Storniert'}</span></td>
+              <td><span class="stbadge ST-${st}">${st==='Y'?'Bezahlt':st==='N'?'Offen':'Storniert'}</span></td>
               <td onclick="event.stopPropagation()">
-                ${st==='Y'?`<button class="btn btn-er btn-s" onclick="stornieren(${vid})">Stornieren</button>`:''}
+                ${st!=='S'?`<button class="btn btn-er btn-s" onclick="stornieren(${vid})">Stornieren</button>`:''}
               </td>
             </tr>`;
         }).join('')}
@@ -702,14 +779,16 @@
       <div class="vd-sec">
         <h4>Zahlungsstatus</h4>
         <div class="toggle-row">
-          <span class="stbadge ST-${st}" id="vd-stbadge">${st==='Y'?'Bezahlt':'Storniert'}</span>
-          <span style="flex:1;font-size:13px;color:var(--mu)">${st==='Y'?'Der Verkauf ist als bezahlt markiert.':'Der Verkauf ist storniert / offen.'}</span>
+          <span class="stbadge ST-${st}" id="vd-stbadge">${st==='Y'?'Bezahlt':st==='N'?'Offen':'Storniert'}</span>
+          <span style="flex:1;font-size:13px;color:var(--mu)">${st==='Y'?'Der Verkauf ist als bezahlt markiert.':st==='N'?'Der Verkauf ist offen / noch nicht bezahlt.':'Der Verkauf wurde storniert.'}</span>
           ${st==='Y'
             ? `<button class="btn btn-er btn-s" onclick="vdSetStatus(${v.verkaufid},'N')">Als offen markieren</button>`
-            : `<button class="btn btn-ok btn-s" onclick="vdSetStatus(${v.verkaufid},'Y')">Als bezahlt markieren</button>`
+            : st==='N'
+              ? `<button class="btn btn-ok btn-s" onclick="vdSetStatus(${v.verkaufid},'Y')">Als bezahlt markieren</button>`
+              : ''
           }
         </div>
-        ${st==='Y'?`<button class="btn btn-er btn-s" style="width:100%;justify-content:center" onclick="storniereVD(${v.verkaufid})">Verkauf stornieren</button>`:''}
+        ${st!=='S'?`<button class="btn btn-er btn-s" style="width:100%;justify-content:center" onclick="storniereVD(${v.verkaufid})">Verkauf stornieren</button>`:''}
       </div>
 
       <!-- Positionen -->
@@ -749,7 +828,7 @@
         </div>
         <div id="vd-rueckgabe-form" style="display:none;background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);padding:14px;margin-top:8px">
           <div class="fg" style="margin-bottom:10px"><label>Grund</label><textarea id="vd-rg-grund" rows="2" style="width:100%;padding:8px 11px;border:1.5px solid var(--bd);border-radius:var(--r);font-family:'DM Sans',sans-serif;font-size:14px;resize:vertical"></textarea></div>
-          <div class="fg" style="margin-bottom:10px"><label>Erstattungsbetrag (€)</label><input id="vd-rg-betrag" type="number" step="0.01" min="0" style="width:100%;padding:8px 11px;border:1.5px solid var(--bd);border-radius:var(--r);font-size:14px"></div>
+          <div class="fg" style="margin-bottom:10px"><label>Erstattungsbetrag (€)</label><input id="vd-rg-betrag" type="number" step="1" min="0" style="width:100%;padding:8px 11px;border:1.5px solid var(--bd);border-radius:var(--r);font-size:14px"></div>
           <div style="display:flex;gap:8px">
             <button class="btn btn-ok btn-s" onclick="vdRueckgabeSpeichern(${v.verkaufid})">Speichern</button>
             <button class="btn btn-g btn-s" onclick="document.getElementById('vd-rueckgabe-form').style.display='none'">Abbrechen</button>

@@ -712,7 +712,7 @@ create table VERKAUF (
    ZAHLUNGSARTID        NUMBER(20,0)          not null,
    ANZAHL               NUMBER(20,0)          not null,
    ZAHLUNGSTATUS        CHAR(1)              default 'N'  not null
-      constraint CKC_ZAHLUNGSTATUS_VERKAUF check (ZAHLUNGSTATUS in ('Y','N')),
+      constraint CKC_ZAHLUNGSTATUS_VERKAUF check (ZAHLUNGSTATUS in ('Y','N','S')),
    VERKAUFSDATUM        DATE                  not null,
    constraint PK_VERKAUF primary key (VERKAUFID)
 );
