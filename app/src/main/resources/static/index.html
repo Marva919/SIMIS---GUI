@@ -724,7 +724,7 @@
               <td style="font-weight:500">${eur(v.gesamt||0)}</td>
               <td><span class="stbadge ST-${st}">${st==='Y'?'Bezahlt':st==='N'?'Offen':'Storniert'}</span></td>
               <td onclick="event.stopPropagation()">
-                ${st!=='S'?`<button class="btn btn-er btn-s" onclick="stornieren(${vid})">Stornieren</button>`:''}
+                ${st==='N'?`<button class="btn btn-er btn-s" onclick="stornieren(${vid})">Stornieren</button>`:''}
               </td>
             </tr>`;
         }).join('')}
@@ -788,7 +788,7 @@
               : ''
           }
         </div>
-        ${st!=='S'?`<button class="btn btn-er btn-s" style="width:100%;justify-content:center" onclick="storniereVD(${v.verkaufid})">Verkauf stornieren</button>`:''}
+        ${st==='N'?`<button class="btn btn-er btn-s" style="width:100%;justify-content:center" onclick="storniereVD(${v.verkaufid})">Verkauf stornieren</button>`:''}
       </div>
 
       <!-- Positionen -->

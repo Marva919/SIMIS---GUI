@@ -65,6 +65,10 @@ public class VerkaufService {
   }
 
   public boolean stornieren(Long verkaufId, Long lagerId) {
+    String status = jdbcTemplate.queryForObject(
+        "SELECT ZAHLUNGSTATUS FROM VERKAUF WHERE VERKAUFID = ?", String.class, verkaufId);
+    if (status == null) throw new NoSuchElementException("Verkauf " + verkaufId + " nicht gefunden");
+    if ("Y".equals(status)) throw new IllegalStateException("Bereits bezahlte Verkäufe können nicht storniert werden");
     return spService.verkaufStornieren(verkaufId, lagerId);
   }
 
