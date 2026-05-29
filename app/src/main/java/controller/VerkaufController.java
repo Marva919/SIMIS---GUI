@@ -42,9 +42,16 @@ public class VerkaufController {
   @PutMapping("/{id}/stornieren")
   public ResponseEntity<?> stornieren(
       @PathVariable Long id, @AuthenticationPrincipal Angestellter a) {
-    boolean ok = service.stornieren(id, a.getLagerId());
-    if (!ok) return ResponseEntity.badRequest().body(Map.of("error", "Stornierung fehlgeschlagen"));
-    return ResponseEntity.ok(Map.of("message", "Verkauf " + id + " storniert"));
+    try {
+      boolean ok = service.stornieren(id, a.getLagerId());
+      if (!ok)
+        return ResponseEntity.badRequest().body(Map.of("error", "Stornierung fehlgeschlagen"));
+      return ResponseEntity.ok(Map.of("message", "Verkauf " + id + " storniert"));
+    } catch (IllegalStateException e) {
+      return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("error", e.getMessage()));
+    } catch (NoSuchElementException e) {
+      return ResponseEntity.notFound().build();
+    }
   }
 
   @PatchMapping("/{id}/zahlungstatus")

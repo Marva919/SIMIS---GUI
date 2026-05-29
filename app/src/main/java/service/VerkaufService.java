@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import model.Verkauf;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,7 @@ import repository.VerkaufRepository;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class VerkaufService {
 
   private final VerkaufRepository repo;
@@ -35,10 +37,20 @@ public class VerkaufService {
 
   public StoredProcedureService.VerkaufErgebnis verkaufErstellen(
       VerkaufAnfrage anfrage, Long filialeId, Long lagerId) {
+    log.info("Positionen erhalten: {}", anfrage.positionen());
+    if (anfrage.positionen() == null || anfrage.positionen().isEmpty()) {
+      throw new IllegalArgumentException("Keine Positionen angegeben");
+    }
+    for (PositionAnfrage p : anfrage.positionen()) {
+      if (p.varianteId() == null) {
+        throw new IllegalArgumentException("VarianteId fehlt in einer Position: " + p);
+      }
+    }
     String csv =
         anfrage.positionen().stream()
             .map(p -> p.varianteId() + ":" + p.menge())
             .collect(Collectors.joining(","));
+    log.info("CSV an SP_VERKAUF_ERSTELLEN: [{}]", csv);
 
     StoredProcedureService.VerkaufErgebnis ergebnis =
         spService.verkaufErstellen(
@@ -52,10 +64,12 @@ public class VerkaufService {
               anfrage.rabattId());
       if (prozent != null && prozent.compareTo(BigDecimal.ZERO) > 0) {
         BigDecimal faktor =
-            BigDecimal.ONE.subtract(prozent.divide(BigDecimal.valueOf(100), 4, RoundingMode.HALF_UP));
+            BigDecimal.ONE.subtract(
+                prozent.divide(BigDecimal.valueOf(100), 4, RoundingMode.HALF_UP));
         jdbcTemplate.update(
             "UPDATE VERKAUFPOSITION SET EINZELPREIS = ROUND(EINZELPREIS * ?, 2) WHERE VERKAUFID = ?",
-            faktor, ergebnis.verkaufId());
+            faktor,
+            ergebnis.verkaufId());
         BigDecimal rabattierterGesamt =
             ergebnis.gesamtBetrag().multiply(faktor).setScale(2, RoundingMode.HALF_UP);
         return new StoredProcedureService.VerkaufErgebnis(ergebnis.verkaufId(), rabattierterGesamt);
@@ -65,6 +79,13 @@ public class VerkaufService {
   }
 
   public boolean stornieren(Long verkaufId, Long lagerId) {
+    String status =
+        jdbcTemplate.queryForObject(
+            "SELECT ZAHLUNGSTATUS FROM VERKAUF WHERE VERKAUFID = ?", String.class, verkaufId);
+    if (status == null)
+      throw new NoSuchElementException("Verkauf " + verkaufId + " nicht gefunden");
+    if ("Y".equals(status))
+      throw new IllegalStateException("Bereits bezahlte Verkäufe können nicht storniert werden");
     return spService.verkaufStornieren(verkaufId, lagerId);
   }
 
@@ -106,7 +127,8 @@ public class VerkaufService {
             """;
 
     List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql, verkaufId);
-    if (rows.isEmpty()) throw new NoSuchElementException("Verkauf " + verkaufId + " nicht gefunden");
+    if (rows.isEmpty())
+      throw new NoSuchElementException("Verkauf " + verkaufId + " nicht gefunden");
 
     Map<String, Object> header = lowercaseKeys(rows.get(0));
 
@@ -157,19 +179,28 @@ public class VerkaufService {
   public void zahlungsstatusAktualisieren(Long verkaufId, String status) {
     if (!status.equals("Y") && !status.equals("N"))
       throw new IllegalArgumentException("Status muss Y oder N sein");
-    int updated = jdbcTemplate.update("UPDATE VERKAUF SET ZAHLUNGSTATUS=? WHERE VERKAUFID=?", status, verkaufId);
+    int updated =
+        jdbcTemplate.update(
+            "UPDATE VERKAUF SET ZAHLUNGSTATUS=? WHERE VERKAUFID=?", status, verkaufId);
     if (updated == 0) throw new NoSuchElementException("Verkauf " + verkaufId + " nicht gefunden");
   }
 
-  public void rueckgabeErfassen(Long verkaufId, Long lagerId, Long kundeId, String grund, BigDecimal betrag) {
-    Long nextId = jdbcTemplate.queryForObject(
-        "SELECT NVL(MAX(RUECKGABEID), 0) + 1 FROM RUECKGABE", Long.class);
+  public void rueckgabeErfassen(
+      Long verkaufId, Long lagerId, Long kundeId, String grund, BigDecimal betrag) {
+    Long nextId =
+        jdbcTemplate.queryForObject(
+            "SELECT NVL(MAX(RUECKGABEID), 0) + 1 FROM RUECKGABE", Long.class);
     jdbcTemplate.update(
         """
             INSERT INTO RUECKGABE (RUECKGABEID, VERKAUFID, LAGERID, KUNDEID, DATUM, GRUND, BETRAG_ERSTATTUNG)
             VALUES (?, ?, ?, ?, SYSDATE, ?, ?)
             """,
-        nextId, verkaufId, lagerId, kundeId, grund, betrag);
+        nextId,
+        verkaufId,
+        lagerId,
+        kundeId,
+        grund,
+        betrag);
   }
 
   private List<Map<String, Object>> verkaufsUebersicht(String whereClause, Long parameter) {
@@ -210,7 +241,9 @@ public class VerkaufService {
   public record VerkaufAnfrage(
       Long kundeId, Long zahlungsartId, Long rabattId, List<PositionAnfrage> positionen) {}
 
-  public record PositionAnfrage(Long varianteId, int menge) {}
+  public record PositionAnfrage(
+      @com.fasterxml.jackson.annotation.JsonProperty("varianteId") Long varianteId,
+      @com.fasterxml.jackson.annotation.JsonProperty("menge") int menge) {}
 
   public record ZahlungsstatusAnfrage(String status) {}
 

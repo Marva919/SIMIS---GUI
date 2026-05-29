@@ -100,11 +100,11 @@ BEGIN
     v_rest := p_positionen || ',';
     LOOP
         v_comma := INSTR(v_rest, ',');
-        EXIT WHEN v_comma = 0 OR LENGTH(TRIM(v_rest)) = 0;
+        EXIT WHEN v_comma IS NULL OR v_comma = 0 OR NVL(LENGTH(TRIM(v_rest)), 0) = 0;
 
         v_token  := TRIM(SUBSTR(v_rest, 1, v_comma - 1));
         v_rest   := SUBSTR(v_rest, v_comma + 1);
-        EXIT WHEN LENGTH(v_token) = 0;
+        EXIT WHEN NVL(LENGTH(v_token), 0) = 0;
 
         v_colon      := INSTR(v_token, ':');
         v_varianteid := TO_NUMBER(SUBSTR(v_token, 1, v_colon - 1));

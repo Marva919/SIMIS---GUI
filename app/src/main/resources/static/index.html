@@ -129,8 +129,8 @@
 <div id="login">
     <div class="card">
         <div class="logo"><img src="/logo-simis.png" alt="SIMIS" style="width:150px;margin-bottom:8px"><p>Mitarbeiterportal · Intern</p></div>
-        <div class="fg"><label>E-Mail</label><input type="email" id="le"></div>
-        <div class="fg"><label>Passwort</label><input type="password" id="lp"></div>
+        <div class="fg"><label>E-Mail</label><input type="email" id="le" onkeydown="if(event.key==='Enter')doLogin()"></div>
+        <div class="fg"><label>Passwort</label><input type="password" id="lp" onkeydown="if(event.key==='Enter')doLogin()"></div>
         <button class="btn btn-p" onclick="doLogin()">Anmelden</button>
         <div class="err" id="lerr"></div>
     </div>
@@ -428,7 +428,7 @@
             const sc=bestand>10?'s-ok':bestand>0?'s-low':'s-out';
             const stxt=bestand>0?bestand+' auf Lager':'Ausverkauft';
             const prStr=minP===maxP?eur(minP):'ab '+eur(minP);
-            const hatRabatt=p.varianten.some(v=>v.rabatt_prozent>0);
+            const hatRabatt=p.varianten.some(v=>v.endpreis<v.preisvariante);
             const icon=KATICONS[p.kategoriename]||'🪑';
             // Farbkreise
             const farben=[...new Map(p.varianten.map(v=>[v.farbebezeichnung,v.hexcode])).entries()];
@@ -483,9 +483,9 @@
               <span style="font-size:12px;color:var(--mu)">${v.groesse_beschreibung} · ${v.breite_cm}×${v.tiefe_cm} cm</span>
             </div>
             <div class="vi-sub" style="margin-top:3px">
-              ${v.rabatt_prozent>0?`<s style="color:var(--mu)">${eur(v.preisvariante)}</s> → `:''}
+              ${v.endpreis<v.preisvariante?`<s style="color:var(--mu)">${eur(v.preisvariante)}</s> → `:''}
               <strong>${eur(v.endpreis)}</strong>
-              ${v.rabatt_prozent>0?`<span style="color:var(--er);font-size:11px"> (${v.rabatt_prozent}% Rabatt)</span>`:''}
+              ${v.endpreis<v.preisvariante?`<span style="color:var(--er);font-size:11px"> (${v.rabatt_prozent}% Rabatt)</span>`:''}
               · ${v.bestand>0?v.bestand+' auf Lager':'Ausverkauft'}
             </div>
           </div>
@@ -694,6 +694,7 @@
             document.getElementById('rabatt').value='';
             document.getElementById('rabatt-info').style.display='none';
             toast(`Verkauf #${r.verkaufId} – Gesamt: ${eur(r.gesamtBetrag)}`,'ok');
+            ladeProdukte();
             gotoTab('verkaeufe');
         } catch(e){toast('Fehler: '+e.message,'er');}
     }
@@ -724,7 +725,7 @@
               <td style="font-weight:500">${eur(v.gesamt||0)}</td>
               <td><span class="stbadge ST-${st}">${st==='Y'?'Bezahlt':st==='N'?'Offen':'Storniert'}</span></td>
               <td onclick="event.stopPropagation()">
-                ${st!=='S'?`<button class="btn btn-er btn-s" onclick="stornieren(${vid})">Stornieren</button>`:''}
+                ${st==='N'?`<button class="btn btn-er btn-s" onclick="stornieren(${vid})">Stornieren</button>`:''}
               </td>
             </tr>`;
         }).join('')}
@@ -788,7 +789,7 @@
               : ''
           }
         </div>
-        ${st!=='S'?`<button class="btn btn-er btn-s" style="width:100%;justify-content:center" onclick="storniereVD(${v.verkaufid})">Verkauf stornieren</button>`:''}
+        ${st==='N'?`<button class="btn btn-er btn-s" style="width:100%;justify-content:center" onclick="storniereVD(${v.verkaufid})">Verkauf stornieren</button>`:''}
       </div>
 
       <!-- Positionen -->
