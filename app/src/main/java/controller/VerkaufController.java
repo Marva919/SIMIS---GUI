@@ -44,7 +44,8 @@ public class VerkaufController {
       @PathVariable Long id, @AuthenticationPrincipal Angestellter a) {
     try {
       boolean ok = service.stornieren(id, a.getLagerId());
-      if (!ok) return ResponseEntity.badRequest().body(Map.of("error", "Stornierung fehlgeschlagen"));
+      if (!ok)
+        return ResponseEntity.badRequest().body(Map.of("error", "Stornierung fehlgeschlagen"));
       return ResponseEntity.ok(Map.of("message", "Verkauf " + id + " storniert"));
     } catch (IllegalStateException e) {
       return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("error", e.getMessage()));

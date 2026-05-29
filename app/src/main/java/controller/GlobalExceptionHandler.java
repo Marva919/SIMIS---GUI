@@ -23,6 +23,12 @@ public class GlobalExceptionHandler {
     return ResponseEntity.notFound().build();
   }
 
+  @ExceptionHandler(IllegalArgumentException.class)
+  public ResponseEntity<?> handleIllegalArg(IllegalArgumentException ex) {
+    log.error("Validierungsfehler: {}", ex.getMessage());
+    return ResponseEntity.badRequest().body(Map.of("error", ex.getMessage()));
+  }
+
   @ExceptionHandler(DataAccessException.class)
   public ResponseEntity<?> handleDb(DataAccessException ex) {
     log.error("DB-Fehler: {}", ex.getMessage());

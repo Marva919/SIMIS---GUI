@@ -694,6 +694,7 @@
             document.getElementById('rabatt').value='';
             document.getElementById('rabatt-info').style.display='none';
             toast(`Verkauf #${r.verkaufId} – Gesamt: ${eur(r.gesamtBetrag)}`,'ok');
+            ladeProdukte();
             gotoTab('verkaeufe');
         } catch(e){toast('Fehler: '+e.message,'er');}
     }
